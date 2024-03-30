@@ -6,7 +6,7 @@
 }
 
 body {
-  background: url("../img/tabletop.jpg");
+  background: url("../img/BJTable.PNG");
   background-size: size;
   height: 100%;
   width: 100%;
@@ -20,9 +20,10 @@ body {
 }
 
 .card-back{
-  background-image: url('../img/cardBackDesign.jpg');
+  background-image: url('../img/bitcorn.png');
   border-radius: 5%;
   background-position: center;
+  background-repeat: repeat;
 }
 
 .card-back, img.playingCard {
