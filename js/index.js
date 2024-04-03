@@ -1,3 +1,46 @@
+var deckId = "";
+var player1 = {
+  hand: [],
+  total: 0
+}
+var dealer1 = {
+  hand: [],
+  total: 0
+}
+
+async function init(){
+  await $.getJSON('http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6', function(data){deckId = data.deck_id});
+  console.log(deckId);
+}
+
+async function shuffle(){
+  await $.getJSON(`http://deckofcardsapi.com/api/deck/${deckId}/shuffle/`, 
+    function(data){
+      if(data.shuffled != true){
+        shuffle();
+      }
+  });
+}
+
+async function drawCard() {
+  await $.getJSON(`http://deckofcardsapi.com/api/deck/${deckID}/draw/?count=1`, 
+  function(data){
+    data.cards[0].name = data.cards[0].value;
+    var temp = data.cards[0].name;
+
+    if (temp === 'KING' || temp === 'QUEEN' || temp === 'JACK') {
+      data.cards[0].value = 10;
+    }
+    else if (temp === 'ACE') {
+      data.cards[0].value = 11;
+    }
+    else {
+      data.cards[0].value = parseInt(temp);
+    }
+    return data.cards
+  });
+};
+
 (function() {
   'use strict';
 
@@ -32,27 +75,6 @@
       var $board = $('#board');
 
       var displayGame = function() {
-        $('#restart').off();
-        var $row1 = $('<div class="row" id="row-1"></div>');
-
-        $row1.append('<div class="col s2 total valign-wrapper"><h4 class="white-text">Dealer Total</h4><h1 class="yellow-text" id="dealer-total"></h1></div>');
-        $row1.append('<div class="col s8 valign-wrapper" id="dealerHand"></div>');
-        $row1.append('<div class="col s2 valign-wrapper" id="state-buttons"><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="restart">Play Again</button><p></p><button data-target="modal1" id="rules" class="btn-large modal-trigger yellow-text purple darken-2">Rules</button></div>');
-
-        var $row2 = $('<div class="row" id="row-2"></div>');
-
-        $row2.append('<div class="col s2 valign-wrapper" id="blackjack-buttons"><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="hit">Hit</button><p></p><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="stand">Stand</button></div>');
-
-        $row2.append('<div class="col s8 valign-wrapper" id="playerHand"></div>');
-
-        $row2.append('<div class="col s2 total valign-wrapper"><h4 class="white-text">Player Total</h4><h1 class="yellow-text" id="player-total"></h1></div>');
-
-        $board.append($row1);
-        $board.append($row2);
-
-        $board.append("<div id='modal1' class='modal modal-close grey lighten-4'><div class='modal-content grey-text text-darken-4'><h4 class='center-align'>Blackjack Rules</h4><p></p><p class='left-align'>This game uses a 6 card decks which contains a total of 312 cards. The goal of the game is to get a hand that totals up as close to 21 as possible without going over 21. At the beginning of the game both the dealer and the player are dealt two cards. The dealer's second card is kept hidden from the player until it is the dealer's turn. On the player's turn the player has the choice to draw a new card (hit!) or end their turn with the cards they have. If a player or the dealer hits and their cards total to more than 21 they bust and their turn ends immediately. Kings, queens, and jacks are valued at 10 while aces are valued at 11 unless they cause the hand to bust - then their value changes to 1. If the player or dealer has an exact value of 21 in their hand they got blackjack and their turn automatically ends. To win the game you must not bust and you must have a hand total larger than anyone else left in the game. Enjoy the game!</p></div><div class='modal-footer'><a class='modal-action modal-close waves-effect waves-green btn-flat'>Close</a></div></div>");
-
-        $('.modal-trigger').leanModal();
       };
 
       var shuffle = function() {
