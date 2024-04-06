@@ -1,19 +1,32 @@
+//GLOBAL VARIABLES
+const STATE_NEWHAND = 0;
+const STATE_PLAYERTURN = 1;
+const STATE_DEALERTURN = 2;
+const STATE_REWARD = 3;
+const STATE_BETTING = 4;
+var gameState = STATE_BETTING;
 var deckId = "";
-var player1 = {
+
+var player = {
   hand: [],
-  total: 0
+  total: 0,
+  aceIs11: false
 }
-var dealer1 = {
+var dealer = {
   hand: [],
-  total: 0
+  total: 0,
+  aceIs11: false
 }
 
+//FUNCTIONS
 async function init(){
+  //have a deck be shuffled and log the deck ID for future use
   await $.getJSON('http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6', function(data){deckId = data.deck_id});
   console.log(deckId);
 }
 
 async function shuffle(){
+  //shuffle the deck
   await $.getJSON(`http://deckofcardsapi.com/api/deck/${deckId}/shuffle/`, 
     function(data){
       if(data.shuffled != true){
@@ -22,168 +35,165 @@ async function shuffle(){
   });
 }
 
-async function drawCard() {
+async function drawCard(person){
+  //draw a card from the deck
   await $.getJSON(`http://deckofcardsapi.com/api/deck/${deckID}/draw/?count=1`, 
   function(data){
-    data.cards[0].name = data.cards[0].value;
-    var temp = data.cards[0].name;
+    //add the card to the hand of the person for which the card was drawn
+    person.hand.push(data.cards[0].code)
+    //get the name of the card
+    var cardName = data.cards[0].value;
 
-    if (temp === 'KING' || temp === 'QUEEN' || temp === 'JACK') {
-      data.cards[0].value = 10;
+    if (cardName === 'KING' || cardName === 'QUEEN' || cardName === 'JACK') {
+      //check to see if the person has an ace worth 11 and if the new card would bust them
+      if(person.aceIs11 == true && person.total >= 11){
+        //if the new card would bust them, then the total is unchanged since their ace becomes 1 and then 10 is added by the face card
+        person.aceIs11 = false;
+      }
+      else{
+        //otherwise add 10 for the face card
+        person.total += 10;
+      }
     }
-    else if (temp === 'ACE') {
-      data.cards[0].value = 11;
+    else if (cardName === 'ACE') {
+      //check if the ace would bust them
+      if(person.total <= 10){
+        //if not, add 11 for the ace and mark that they have an ace worth 11
+        person.total += 11;
+        person.aceIs11 = true;
+      }
+      else{
+        //if it would bust them, make the ace worth 1
+        person.total += 1;
+      }
     }
+    //This else block will occur for all cards 2-10
     else {
-      data.cards[0].value = parseInt(temp);
+      //check if the person has an ace worth 11 and if this new card would make them bust
+      if(person.aceIs11 == true && (person.total + parseInt(cardName)) > 21){
+        //If so, convert the ace to a 1 and mark that they no longer have an ace worth 11
+        person.total -= 10;
+        person.aceIs11 = false;
+      }
+      //Add the value of the card to the person's total
+      person.total += parseInt(cardName);
     }
-    return data.cards
   });
 };
 
+function displayStartingHands(){
+  //clear the divs
+  $('#dealerHand').empty();
+  $('#playerHand').empty();
+
+  //loop through the two card for the player and get the image for each and display each in its own div
+  for (var card of player.hand){
+    var imageURL = "https://deckofcardsapi.com/static/img/" + card + ".png";
+    var $card = $(`<img src=${imageURL} class='playingCard'>`);
+    $('#playerHand').append($card);
+  }
+
+  //Display only the first card of the dealer and then the card back for the second card
+  var imageURL = "https://deckofcardsapi.com/static/img/" + dealer.hand[0] + ".png";
+  $('#dealerHand').append(`<img src=${placeholder} class='playingCard'>`);
+  $('#dealerHand').append('<div class="card-back"></div>');
+};
+
+function displayDealerCards(){
+  //remove the flipped over card
+  $('.card-back').remove();
+  //display the second card of the dealer
+  var imageURL = "https://deckofcardsapi.com/static/img/" + dealer.hand[1] + ".png";
+  $('#dealerHand').append(`<img src=${imageURL} class='playingCard'>`);
+};
+
+function displayNewDealerCard(){
+  //get the image for a newly drawn card for the dealer and add it to the dealerHand div
+  var imageURL = "https://deckofcardsapi.com/static/img/" + dealer.hand[dealer.hand.length-1] + ".png";
+  var $card = $(`<img src=${imageURL} class='playingCard'>`);
+  $('#dealerHand').append($card);
+};
+
+function displayNewPlayerCard(){
+  //get the image for a newly drawn card for the player and add it to the playerHand div
+  var imageURL = player.hand[player.hand.length-1].image;
+  var $card = $(`<img src=${imageURL} class='playingCard'>`);
+  $('#playerHand').append($card);
+};
+
+//Logic Functions
+
+function logic() {
+  switch (game_state) {
+      case STATE_BETTING:
+          logic_betting();
+          break;
+      case STATE_NEWHAND:
+          logic_newHand();
+          break;
+      case STATE_PLAYERTURN:
+          logic_playerTurn();
+          break;
+      case STATE_DEALERTURN:
+          logic_dealerTurn();
+          break;
+      case STATE_REWARD:
+          logic_reward();
+          break;
+  }
+}
+
+function logic_betting(){
+  $("#playerButtons").empty();
+  $("#playerButtons").append('<div id="betting-buttons"><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="bet+">Bet+</button><p></p><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="bet-">Bet-</button></div>');
+
+}
+
+function logic_newHand(){
+  if (cardsLeft <= 60) {shuffle(deckID);}
+  player = {hand: [], total: 0};
+  dealer = {hand: [], total: 0};
+
+  drawCard(player);
+  drawCard(player);
+  drawCard(dealer);
+  drawCard(dealer);
+
+  displayStartingHands();
+
+  if(player.total == 21 && dealer.total == 21){
+
+  }
+  else if(player.total == 21){
+
+  }
+  else if(dealer.total == 21){
+
+  }
+  else{
+    gameState = STATE_PLAYERTURN;
+  }
+}
+
+function logic_playerTurn(){
+  $("#playerButtons").empty();
+  $("#playerButtons").append('<div id="playerTurn-buttons"><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="hit">Hit+</button><p></p><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="stand">Stand-</button></div>');
+
+}
+
+function logic_dealerTurn(){
+  $("#playerButtons").empty();
+  while(dealer.total <= 16){
+    drawCard(dealer);
+    displayNewDealerCard();
+  }
+}
+
+function logic_reward(){
+
+}
+
 (function() {
-  'use strict';
-
-  var renderGame = function() {
-    $('.removable').remove();
-
-    var $xhr = $.getJSON('http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6');
-
-    $xhr.done(function(deck) {
-      if ($xhr.status !== 200) {
-        return;
-      }
-      var deckID = deck.deck_id;
-      var cardsLeft = deck.remaining;
-
-      var player = {
-        hand: [],
-        money: 500,
-        hasBlackjack: false,
-        hasAce: false, // for unused aces
-        total: 0
-      };
-
-      var dealer = {
-        hand: [], // playing with first card of dealerHand face down
-        hasBlackjack: false,
-        hasAce: false, // for unused aces
-        total: 0
-      };
-
-      $('.navbar-fixed').after('<div id="board" class="center-align"></div');
-      var $board = $('#board');
-
-      var displayGame = function() {
-      };
-
-      var shuffle = function() {
-        var $shuffled = $.getJSON(`http://deckofcardsapi.com/api/deck/${deckID}/shuffle/`);
-
-        $shuffled.done(function(data) {
-          if ($shuffled.status !== 200) {
-            return;
-          }
-          if (data.shuffled !== true) {
-            shuffle();
-
-            return;
-          }
-          cardsLeft = data.remaining;
-        });
-        $shuffled.fail(function(err) {
-          console.log(err);
-        });
-      };
-
-      var shuffleCheck = function() {
-        if (cardsLeft <= 60) { shuffle(deckID); }
-      };
-
-      var endGame = function(winner) {
-        if (winner === 'player') {
-          Materialize.toast('CONGRATULATIONS, YOU WON!', 6000, 'rounded');
-        }
-        else if (winner === 'dealer') {
-          Materialize.toast('Dealer Won!', 6000, 'rounded');
-        }
-        else {
-          Materialize.toast("Wow, it's a Tie!", 6000, 'rounded');
-        }
-      };
-
-      var draw = function() {
-        var $cardDrawn = $.getJSON(`http://deckofcardsapi.com/api/deck/${deckID}/draw/?count=1`);
-
-        $cardDrawn.done(function(data) {
-          if ($cardDrawn.status !== 200) {
-            return;
-          }
-          cardsLeft = data.remaining;
-          data.cards[0].name = data.cards[0].value;
-          var temp = data.cards[0].name;
-
-          if (temp === 'KING' || temp === 'QUEEN' || temp === 'JACK') {
-            data.cards[0].value = 10;
-          }
-          else if (temp === 'ACE') {
-            data.cards[0].value = 11;
-          }
-          else {
-            data.cards[0].value = parseInt(temp);
-          }
-        });
-
-        $cardDrawn.fail(function(err) {
-          console.log(err);
-        });
-
-        return $cardDrawn;
-      };
-
-      var displayHands = function() {
-        $('#dealerHand').empty();
-        $('#playerHand').empty();
-
-        for (var card of player.hand){
-          var imageURL = card.image;
-          var $card = $(`<img src=${imageURL} class='playingCard'>`);
-          $('#playerHand').append($card);
-        }
-
-        var placeholder = dealer.hand[0].image;
-        $('#dealerHand').append(`<img src=${placeholder} class='playingCard'>`);
-
-        placeholder = dealer.hand[1].image;
-        $('#dealerHand').append('<div class="card-back"></div>');
-      };
-
-      var displayNewDealerCard = function() {
-        var imageURL = dealer.hand[dealer.hand.length-1].image;
-        var $card = $(`<img src=${imageURL} class='playingCard'>`);
-
-        $('#dealerHand').append($card);
-      };
-
-      var displayNewPlayerCard = function() {
-        var imageURL = player.hand[player.hand.length-1].image;
-        var $card = $(`<img src=${imageURL} class='playingCard'>`);
-
-        $('#playerHand').append($card);
-      };
-
-      var calculateHand = function(person) {
-        var total = 0;
-
-        for (var card of person.hand) {
-          total += card.value;
-          if (card.value === 11) { person.hasAce = true; }
-        }
-        if (total === 21) { person.hasBlackjack = true; }
-
-        return total;
-      };
-
       var calculateWinner = function() {
         if (player.total > dealer.total) {
           endGame('player');
@@ -342,49 +352,14 @@ async function drawCard() {
         });
       };
 
-      var deal = function() {
-        var $promise = $.when(draw(), draw(), draw(), draw());
-
-        $promise.done(function (data1, data2, data3, data4) {
-          player.hand.push(data1[0].cards[0]);
-          dealer.hand.push(data2[0].cards[0]);
-          player.hand.push(data3[0].cards[0]);
-          dealer.hand.push(data4[0].cards[0]);
-          displayHands();
-          updateTotal(player, calculateHand(player));
-          calculateHand(dealer);
-          updateTotal(dealer, dealer.hand[0].value);
-          playerTurn();
-        });
-      };
-
-      var startGame = function() {
-        $('#restart').on('click', restartGame);
-        deal();
-      };
-
-      var restartGame = function() {
-        shuffleCheck();
-        player.hand = [];
-        dealer.hand = [];
-        player.hasAce = false;
-        dealer.hasAce = false;
-        player.hasBlackjack = false;
-        dealer.hasBlackjack = false;
-        $('#toast-container').remove();
-        $('#restart').off();
-        startGame();
-      };
-
       displayGame();
       startGame();
     });
     $xhr.fail(function(err) {
       console.log(err);
     });
-  }; // end of renderGame()
+ // end of renderGame()
 
   $('#start').on('click', function() {
     renderGame();
   });
-})();
