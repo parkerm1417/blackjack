@@ -28,6 +28,7 @@ let deck_count = 6;
 let dealerHasPlayed = false;
 let cardsLeft = deck_count * 52; // 52 cards per deck
 let playerBet = 10;   // Player's current bet
+let totalHandBet = 0; // Total bet across all hands
 let playerMoney = 1000; // Player's total money
 let insuranceBet = 0; // Insurance bet
 let splitHands = []; // Array to hold split hands
@@ -196,7 +197,7 @@ function logicBetting() {
   `);
 
   $('#bet_increase').on('click', function () {
-    if (playerMoney > playerBet) {
+    if (playerMoney >= playerBet + 10) {
       playerBet += 10;
       updateBetDisplay();
     }
@@ -212,6 +213,7 @@ function logicBetting() {
   $('#deal').on('click', function () {
     $("#handResult").empty();
     if (playerBet > 0) {
+      totalHandBet = playerBet;
       $("#playerButtons").empty();
       gameState = STATE_NEWHAND;
       playerMoney -= playerBet;
@@ -313,9 +315,10 @@ function logicPlayerTurn() {
   $('#double').on('click', async function () {
     if (playerMoney >= playerBet) {
       playerMoney -= playerBet;
-      playerBet *= 2;
+      totalHandBet += playerBet;
       await drawCard(player);
       await displayNewPlayerCard();
+      updateBetDisplay();
       if (player.total > 21) {
         if (splitHands.length > 0 && currentHandIndex < splitHands.length - 1) {
           splitHands[currentHandIndex] = { ...player };
@@ -330,6 +333,7 @@ function logicPlayerTurn() {
         gameState = STATE_DEALERTURN;
         logic();
       }
+      
     } else {
       $("#handResult").append("Not enough money to double down.");
     }
@@ -338,9 +342,11 @@ function logicPlayerTurn() {
   $('#split').on('click', async function () {
     $('#double').remove();
     if (player.hand.length === 2 && player.hand[0].charAt(0) === player.hand[1].charAt(0) && playerMoney >= playerBet) {
-      splitHands.push({ hand: [player.hand.pop()], total: player.total / 2, aceIs11: player.aceIs11 });
-      splitHands.push({ hand: [player.hand.pop()], total: player.total / 2, aceIs11: player.aceIs11 });
+      totalHandBet += playerBet; // Increase total hand bet
       playerMoney -= playerBet;
+      updateBetDisplay();
+      splitHands.push({ hand: [player.hand.pop()], total: player.total / 2, aceIs11: player.aceIs11 });
+      splitHands.push({ hand: [player.hand.pop()], total: player.total / 2, aceIs11: player.aceIs11 });
       player.hand = [];
       player.total = 0;
       player.aceIs11 = false;
@@ -426,7 +432,11 @@ async function logicReward() {
 
   $("#handResult").html(playerResults.join("<br>"));
   dealerHasPlayed = false;
+  if (playerMoney < playerBet){
+    playerBet = playerMoney;
+  }
   updateBetDisplay();
+  totalHandBet = 0;
   gameState = STATE_BETTING;
   logic();
 }
@@ -446,6 +456,7 @@ async function logicInsurance() {
     if (playerMoney >= playerBet / 2) {
       playerMoney -= playerBet / 2;
       insuranceBet = playerBet / 2;
+      totalHandBet += insuranceBet;
       if (dealer.total === 21) {
         if (!dealerHasPlayed) {
           await displayDealerCards();
@@ -472,8 +483,13 @@ async function logicInsurance() {
 
 // Update the displayed bet and player's total money
 function updateBetDisplay() {
-  $('#playerScore').text(`Player Money: $${playerMoney}`);
-  $('#dealerScore').text(`Current Bet: $${playerBet}`);
+  $('#playerMoney').text(`Player Money: $${playerMoney}`);
+  $('#currentBet').text(`Current Bet: $${playerBet}`);
+  if(totalHandBet > 0){
+    $('#totalHandBet').text(`Total Hand Bet: $${totalHandBet}`);
+  }else{
+    $('#totalHandBet').text(``);
+  }
 }
 
 // Update the scores displayed for player and dealer
