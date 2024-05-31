@@ -52,6 +52,14 @@ div p {
   justify-content: center;
 }
 
+#handResult {
+  font-family: 'arial';
+  font-size: 5vh;
+  letter-spacing: 3px;
+  color: red;
+  font-weight: 900;
+}
+
 .endGame{
   justify-content: center;
 }

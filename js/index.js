@@ -4,6 +4,9 @@ const STATE_PLAYERTURN = 1;
 const STATE_DEALERTURN = 2;
 const STATE_REWARD = 3;
 const STATE_BETTING = 4;
+const STATE_SPLIT = 5;
+const STATE_INSURANCE = 6;
+
 const CARD_WIDTH = 11; // Width of each card in the sprite sheet
 const CARD_HEIGHT = 9; // Height of each card in the sprite sheet
 const CARD_GAP = 1;
@@ -26,6 +29,9 @@ let dealerHasPlayed = false;
 let cardsLeft = deck_count * 52; // 52 cards per deck
 let playerBet = 10;   // Player's current bet
 let playerMoney = 1000; // Player's total money
+let insuranceBet = 0; // Insurance bet
+let splitHands = []; // Array to hold split hands
+let currentHandIndex = 0; // Index of the current hand being played
 
 // Player and Dealer objects to hold their respective hands and totals
 let player = { hand: [], total: 0, aceIs11: false };
@@ -38,7 +44,6 @@ async function init() {
   try {
     const data = await $.getJSON(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=${deck_count}`);
     deckId = data.deck_id;
-    console.log(deckId);
     updateBetDisplay();
     logic();
   } catch (error) {
@@ -64,26 +69,26 @@ async function drawCard(person) {
     const data = await $.getJSON(`http://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`);
     const card = data.cards[0];
     person.hand.push(card.code);
-    updateTotal(person, card.value);
+    await updateTotal(person, card.value);
     cardsLeft = data.remaining;
-    updateScores();
+    await updateScores();
   } catch (error) {
     console.error("Error drawing card:", error);
   }
 }
 
 // Update the total score for the person based on the drawn card's value
-function updateTotal(person, cardValue) {
+async function updateTotal(person, cardValue) {
   // Handle logic for face cards (King, Queen, Jack)
   if (['KING', 'QUEEN', 'JACK'].includes(cardValue)) {
     person.total += 10;
-  
-  // Handle logic for aces
-  } else if (cardValue === 'ACE') {
-    person.total += person.total <= 10 ? 11 : 1;
-    person.aceIs11 = person.total <= 10;
 
-  // Handle logic for number cards (2-10)
+    // Handle logic for aces (default to 11, then adjust if needed)
+  } else if (cardValue === 'ACE') {
+    person.total += 11;
+    person.aceIs11 = true;
+
+    // Handle logic for number cards (2-10)
   } else {
     person.total += parseInt(cardValue);
   }
@@ -95,6 +100,7 @@ function updateTotal(person, cardValue) {
   }
 }
 
+// Find the location for the card on the sprite sheet
 function getCardBackgroundPosition(cardCode) {
   let position = CARD_POSITIONS[cardCode];
   let row = Math.floor(position / SPRITE_COLUMNS);
@@ -121,7 +127,7 @@ function displayStartingHands() {
 }
 
 // Display all dealer's cards
-function displayDealerCards() {
+async function displayDealerCards() {
   $('.card-back').remove();
   dealer.hand.forEach((card, index) => {
     if (index > 0) {
@@ -129,6 +135,7 @@ function displayDealerCards() {
       $('#dealerHand').append(`<div class="playingCard" style="background-position: ${backgroundPosition};"></div>`);
     }
   });
+  await new Promise(resolve => setTimeout(resolve, 250));
 }
 
 async function displayNewDealerCard() {
@@ -136,15 +143,17 @@ async function displayNewDealerCard() {
   let backgroundPosition = getCardBackgroundPosition(card);
   let $card = $(`<div class="playingCard" style="background-position: ${backgroundPosition};"></div>`);
   $('#dealerHand').append($card);
-  await new Promise(resolve => setTimeout(resolve, 500));
 }
 
 async function displayNewPlayerCard() {
   let card = player.hand[player.hand.length - 1];
   let backgroundPosition = getCardBackgroundPosition(card);
   let $card = $(`<div class="playingCard" style="background-position: ${backgroundPosition};"></div>`);
-  $('#playerHand').append($card);
-  await new Promise(resolve => setTimeout(resolve, 500));
+  if (splitHands.length > 0) {
+    $(`#hand${currentHandIndex + 1}`).append($card);
+  } else {
+    $('#playerHand').append($card);
+  }
 }
 
 // Main game logic controller
@@ -166,6 +175,12 @@ function logic() {
     case STATE_REWARD:
       logicReward();
       break;
+    case STATE_SPLIT:
+      logicSplit();
+      break;
+    case STATE_INSURANCE:
+      logicInsurance();
+      break;
   }
 }
 
@@ -176,6 +191,7 @@ function logicBetting() {
     <div id="betting-buttons">
       <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="bet_increase">Bet+</button>
       <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="bet_decrease">Bet-</button>
+      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="deal">Deal</button>
     </div>
   `);
 
@@ -193,20 +209,16 @@ function logicBetting() {
     }
   });
 
-  $("#playerButtons").append(`
-    <div>
-      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="deal">Deal</button>
-    </div>
-  `);
-
   $('#deal').on('click', function () {
+    $("#handResult").empty();
     if (playerBet > 0) {
+      $("#playerButtons").empty();
       gameState = STATE_NEWHAND;
       playerMoney -= playerBet;
       updateBetDisplay();
       logic();
     } else {
-      alert("Please place a bet to start the game.");
+      $("#handResult").append("Please place a bet to start the game.");
     }
   });
 }
@@ -222,6 +234,8 @@ async function logicNewHand() {
   dealer.hand = [];
   dealer.total = 0;
   dealer.aceIs11 = false;
+  splitHands = [];
+  currentHandIndex = 0;
 
   await drawCard(player);
   await drawCard(player);
@@ -229,10 +243,17 @@ async function logicNewHand() {
   await drawCard(dealer);
 
   displayStartingHands();
-  updateScores();
+  await updateScores();
 
   if (player.total === 21 || (dealerHasPlayed && dealer.total === 21)) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!dealerHasPlayed) {
+      await displayDealerCards();
+      await updateScores(true);
+    }
     gameState = STATE_REWARD;
+  } else if (dealer.hand[0].charAt(0) === 'A') {
+    gameState = STATE_INSURANCE;
   } else {
     gameState = STATE_PLAYERTURN;
   }
@@ -242,38 +263,135 @@ async function logicNewHand() {
 // Handle player's turn
 function logicPlayerTurn() {
   $("#playerButtons").empty();
-  $("#playerButtons").append(`
-    <div id="playerTurn-buttons">
-      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="hit">Hit</button>
-      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="stand">Stand</button>
-    </div>
-  `);
+  let buttonsHtml = `
+    <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="hit">Hit</button>
+    <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="stand">Stand</button>
+  `;
+
+  // Show Double Down button if applicable
+  if (player.hand.length === 2 && (player.total === 9 || player.total === 10 || player.total === 11) && playerMoney >= playerBet && splitHands.length === 0) {
+    buttonsHtml += `<button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="double">Double Down</button>`;
+  }
+
+  // Show Split button if applicable
+  if (player.hand.length === 2 && player.hand[0].charAt(0) === player.hand[1].charAt(0) && playerMoney >= playerBet) {
+    buttonsHtml += `<button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="split">Split</button>`;
+  }
+
+  $("#playerButtons").html(buttonsHtml);
 
   $('#hit').on('click', async function () {
+    $('#double').remove();
     await drawCard(player);
     await displayNewPlayerCard();
     if (player.total > 21) {
-      gameState = STATE_REWARD;
+      if (splitHands.length > 0 && currentHandIndex < splitHands.length - 1) {
+        splitHands[currentHandIndex] = { ...player };
+        currentHandIndex++;
+        player = splitHands[currentHandIndex];
+        displaySplitHands();
+      } else {
+        gameState = STATE_REWARD;
+      }
       logic();
     }
   });
 
   $('#stand').on('click', function () {
-    gameState = STATE_DEALERTURN;
+    $('#double').remove();
+    if (splitHands.length > 0 && currentHandIndex < splitHands.length - 1) {
+      splitHands[currentHandIndex] = { ...player };
+      currentHandIndex++;
+      player = splitHands[currentHandIndex];
+      displaySplitHands();
+    } else {
+      gameState = STATE_DEALERTURN;
+    }
     logic();
   });
+
+  $('#double').on('click', async function () {
+    if (playerMoney >= playerBet) {
+      playerMoney -= playerBet;
+      playerBet *= 2;
+      await drawCard(player);
+      await displayNewPlayerCard();
+      if (player.total > 21) {
+        if (splitHands.length > 0 && currentHandIndex < splitHands.length - 1) {
+          splitHands[currentHandIndex] = { ...player };
+          currentHandIndex++;
+          player = splitHands[currentHandIndex];
+          displaySplitHands();
+        } else {
+          gameState = STATE_REWARD;
+          logic();
+        }
+      } else {
+        gameState = STATE_DEALERTURN;
+        logic();
+      }
+    } else {
+      $("#handResult").append("Not enough money to double down.");
+    }
+  });
+
+  $('#split').on('click', async function () {
+    $('#double').remove();
+    if (player.hand.length === 2 && player.hand[0].charAt(0) === player.hand[1].charAt(0) && playerMoney >= playerBet) {
+      splitHands.push({ hand: [player.hand.pop()], total: player.total / 2, aceIs11: player.aceIs11 });
+      splitHands.push({ hand: [player.hand.pop()], total: player.total / 2, aceIs11: player.aceIs11 });
+      playerMoney -= playerBet;
+      player.hand = [];
+      player.total = 0;
+      player.aceIs11 = false;
+      await drawCard(player);
+      await drawCard(splitHands[0]);
+      await drawCard(splitHands[1]);
+      gameState = STATE_SPLIT;
+      logic();
+    } else {
+      $("#handResult").append("Cannot split this hand.");
+    }
+  });
+}
+
+// Handle split logic
+function logicSplit() {
+  player = splitHands[currentHandIndex];
+  displaySplitHands();
+  gameState = STATE_PLAYERTURN;
+  logic();
+}
+
+async function displaySplitHands() {
+  $('#playerHand').empty();
+  splitHands.forEach((hand, index) => {
+    const handId = `hand${index + 1}`;
+    const handDiv = $(`<div id="${handId}" class="splitHand"></div>`).css({
+      'width': 'fit-content',
+      'padding-top': '4px',
+      'border': index === currentHandIndex ? '2px solid red' : 'none'
+    });
+    hand.hand.forEach(card => {
+      let backgroundPosition = getCardBackgroundPosition(card);
+      let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
+      handDiv.append($card);
+    });
+    $('#playerHand').append(handDiv);
+  });
+  await updateScores();
 }
 
 // Handle dealer's turn
 async function logicDealerTurn() {
   $("#playerButtons").empty();
-  displayDealerCards();
-  updateScores();
+  await displayDealerCards();
+  await updateScores();
 
-  while (dealer.total <= 16) {
+  while (dealer.total < 17) {
     await drawCard(dealer);
     await displayNewDealerCard();
-    updateScores();
+    await updateScores();
   }
 
   gameState = STATE_REWARD;
@@ -281,25 +399,75 @@ async function logicDealerTurn() {
 }
 
 // Handle the end of the game and determine rewards
-function logicReward() {
-  let resultMessage = "";
-  if (player.total > 21) {
-    resultMessage = "Player busts. Dealer wins.";
-  } else if (dealer.total > 21 || player.total > dealer.total) {
-    resultMessage = "Player wins";
-    playerMoney += playerBet * 2;
-  } else if (dealer.total > player.total) {
-    resultMessage = "Dealer wins";
-  } else {
-    resultMessage = "It's a tie.";
-    playerMoney += playerBet;
+async function logicReward() {
+  let playerResults = [];
+  let handsToCheck = splitHands.length > 0 ? splitHands : [{ ...player }];
+
+  if (!dealerHasPlayed) {
+    await displayDealerCards();
+    await updateScores(true);
   }
 
-  alert(resultMessage);
+  handsToCheck.forEach((hand, index) => {
+    let handLabel = splitHands.length > 0 ? `HAND ${index + 1}: ` : "";
+
+    if (hand.total > 21) {
+      playerResults.push(`${handLabel}BUST`);
+    } else if (dealer.total > 21 || hand.total > dealer.total) {
+      playerResults.push(`${handLabel}WIN!`);
+      playerMoney += playerBet * 2;
+    } else if (dealer.total > hand.total) {
+      playerResults.push(`${handLabel}DEALER WINS`);
+    } else {
+      playerResults.push(`${handLabel}PUSH`);
+      playerMoney += playerBet;
+    }
+  });
+
+  $("#handResult").html(playerResults.join("<br>"));
   dealerHasPlayed = false;
   updateBetDisplay();
   gameState = STATE_BETTING;
   logic();
+}
+
+// Handle insurance logic
+async function logicInsurance() {
+  $("#playerButtons").empty();
+  $("#playerButtons").append(`
+    <div id="insurance-buttons">
+      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="insurance_yes">Insurance</button>
+      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="insurance_no">No Insurance</button>
+      <br> IF DEALER HAS BLACKJACK, INSURANCE PAYS 2:1.
+    </div>
+  `);
+
+  $('#insurance_yes').on('click', async function () {
+    if (playerMoney >= playerBet / 2) {
+      playerMoney -= playerBet / 2;
+      insuranceBet = playerBet / 2;
+      if (dealer.total === 21) {
+        if (!dealerHasPlayed) {
+          await displayDealerCards();
+          await updateScores(true);
+        }
+        $("#handResult").append("DEALER HAD BLACKJACK!");
+        playerMoney += insuranceBet * 2;
+        gameState = STATE_BETTING; // Hand over, return to betting state
+      } else {
+        $("#handResult").append("DEALER DOES NOT HAVE BLACKJACK.");
+        gameState = STATE_PLAYERTURN; // Continue hand >> players turn
+      }
+      logic();
+    } else {
+      $("#handResult").append("Not enough money for insurance.");
+    }
+  });
+
+  $('#insurance_no').on('click', function () {
+    gameState = STATE_PLAYERTURN;
+    logic();
+  });
 }
 
 // Update the displayed bet and player's total money
@@ -309,8 +477,15 @@ function updateBetDisplay() {
 }
 
 // Update the scores displayed for player and dealer
-function updateScores() {
-  $('#playerTotal').text(`Player Total: ${player.total}`);
+async function updateScores(dealerOnly = false) {
+  if (!dealerOnly) {
+    if (splitHands.length > 0) {
+      let playerScores = splitHands.map((hand, index) => `HAND ${index + 1}: ${hand.total}`).join("<br>");
+      $('#playerTotal').html(playerScores);
+    } else {
+      $('#playerTotal').text(`Player Total: ${player.total}`);
+    }
+  }
   $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '??'}`);
 }
 
