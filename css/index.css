@@ -7,7 +7,7 @@
 
 body {
   background: url("../img/BJTable.PNG");
-  background-size: size;
+  background-size: 100%;
   height: 100%;
   width: 100%;
   position: fixed;
@@ -19,22 +19,25 @@ body {
   font-size: x-large;
 }
 
-.card-back{
-  background-image: url('../img/bitcorn.png');
-  border-radius: 5%;
-  background-position: center;
-  background-repeat: repeat;
+.card-back {
+  width: 110px;
+  height: 90px;
+  background: url('../img/cards.png') no-repeat -1560px 0;
+  padding: 2px;
+  display: inline-block;
+  image-rendering: pixelated;
+  background-size: 1670px 390px;
 }
 
-.card-back, img.playingCard {
-  height: 220px;
-  width: 158px;
-  /*backface-visibility: hidden;
-  transform-style: preserve-3d;
-  transform: translate3d(0px,0px,-1px) rotateY(180deg);
-  z-index:0;*/
-  /*perspective: 2000px;*/
-  /*perspective: 100vmax;*/
+
+.playingCard {
+  width: 110px;
+  height: 90px;
+  background: url('../img/cards.png') no-repeat;
+  padding: 2px;
+  display: inline-block; 
+  image-rendering: pixelated;
+  background-size: 1670px 390px;
 }
 
 div p {
@@ -47,6 +50,14 @@ div p {
   align-items: center;
   align-content: space-around;
   justify-content: center;
+}
+
+#handResult {
+  font-family: 'arial';
+  font-size: 5vh;
+  letter-spacing: 3px;
+  color: red;
+  font-weight: 900;
 }
 
 .endGame{
