@@ -87,7 +87,7 @@ async function updateTotal(person, cardValue) {
     // Handle logic for aces (default to 11, then adjust if needed)
   } else if (cardValue === 'ACE') {
     person.total += 11;
-    person.aceIs11++;
+    person.aceIs11 += 1;
 
     // Handle logic for number cards (2-10)
   } else {
@@ -97,7 +97,7 @@ async function updateTotal(person, cardValue) {
   // Adjust ace value if needed
   if (person.total > 21 && person.aceIs11 > 0) {
     person.total -= 10;
-    person.aceIs11--;
+    person.aceIs11 -= 1;
   }
 }
 
