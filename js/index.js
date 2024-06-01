@@ -35,8 +35,8 @@ let splitHands = []; // Array to hold split hands
 let currentHandIndex = 0; // Index of the current hand being played
 
 // Player and Dealer objects to hold their respective hands and totals
-let player = { hand: [], total: 0, aceIs11: false };
-let dealer = { hand: [], total: 0, aceIs11: false };
+let player = { hand: [], total: 0, aceIs11: 0};
+let dealer = { hand: [], total: 0, aceIs11: 0};
 
 // FUNCTIONS
 
@@ -87,7 +87,7 @@ async function updateTotal(person, cardValue) {
     // Handle logic for aces (default to 11, then adjust if needed)
   } else if (cardValue === 'ACE') {
     person.total += 11;
-    person.aceIs11 = true;
+    person.aceIs11++;
 
     // Handle logic for number cards (2-10)
   } else {
@@ -95,9 +95,9 @@ async function updateTotal(person, cardValue) {
   }
 
   // Adjust ace value if needed
-  if (person.total > 21 && person.aceIs11) {
+  if (person.total > 21 && person.aceIs11 > 0) {
     person.total -= 10;
-    person.aceIs11 = false;
+    person.aceIs11--;
   }
 }
 
@@ -136,6 +136,7 @@ async function displayDealerCards() {
       $('#dealerHand').append(`<div class="playingCard" style="background-position: ${backgroundPosition};"></div>`);
     }
   });
+  dealerHasPlayed = true;
   await new Promise(resolve => setTimeout(resolve, 250));
 }
 
@@ -232,10 +233,10 @@ async function logicNewHand() {
   }
   player.hand = [];
   player.total = 0;
-  player.aceIs11 = false;
+  player.aceIs11 = 0;
   dealer.hand = [];
   dealer.total = 0;
-  dealer.aceIs11 = false;
+  dealer.aceIs11 = 0;
   splitHands = [];
   currentHandIndex = 0;
 
@@ -284,6 +285,7 @@ function logicPlayerTurn() {
 
   $('#hit').on('click', async function () {
     $('#double').remove();
+    $('#split').remove();
     await drawCard(player);
     await displayNewPlayerCard();
     if (player.total > 21) {
@@ -301,6 +303,7 @@ function logicPlayerTurn() {
 
   $('#stand').on('click', function () {
     $('#double').remove();
+    $('#split').remove();
     if (splitHands.length > 0 && currentHandIndex < splitHands.length - 1) {
       splitHands[currentHandIndex] = { ...player };
       currentHandIndex++;
@@ -349,7 +352,7 @@ function logicPlayerTurn() {
       splitHands.push({ hand: [player.hand.pop()], total: player.total / 2, aceIs11: player.aceIs11 });
       player.hand = [];
       player.total = 0;
-      player.aceIs11 = false;
+      player.aceIs11 = 0;
       await drawCard(player);
       await drawCard(splitHands[0]);
       await drawCard(splitHands[1]);
