@@ -469,14 +469,25 @@ async function logicInsurance() {
         $("#handResult").append("DEALER DOES NOT HAVE BLACKJACK.");
         gameState = STATE_PLAYERTURN; // Continue hand >> players turn
       }
+      updateBetDisplay();
       logic();
     } else {
       $("#handResult").append("Not enough money for insurance.");
     }
   });
 
-  $('#insurance_no').on('click', function () {
+  $('#insurance_no').on('click', async function () {
+    if (dealer.total === 21) {
+      if (!dealerHasPlayed) {
+        await displayDealerCards();
+        await updateScores(true);
+      }
+      $("#handResult").append("DEALER HAD BLACKJACK!");
+      gameState = STATE_BETTING;
+    }
+    else{
     gameState = STATE_PLAYERTURN;
+    }
     logic();
   });
 }
