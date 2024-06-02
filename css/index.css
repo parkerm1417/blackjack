@@ -19,55 +19,152 @@ body {
   font-size: x-large;
 }
 
-#betting-buttons{
+/*Button Boxes*/
+#four-button-box {
   width: 575px;
-  height: 303px;
-  background: url(../img/ButtonSpriteSheet.png) no-repeat;
+  height: 304px;
+  background: url(../img/ButtonBackground.png) no-repeat 0 -311px;
+  image-rendering: pixelated;
+  background-size: cover;
 }
 
+#two-button-box {
+  width: 575px;
+  height: 185px;
+  background: url(../img/ButtonBackground.png) no-repeat;
+  image-rendering: pixelated;
+  background-size: cover;
+}
+
+#ins-button-box {
+  width: 575px;
+  height: 304px;
+  background: url(../img/ButtonBackground.png) no-repeat 0 -622px;
+  image-rendering: pixelated;
+  background-size: cover;
+}
+
+/*Button Positioning*/
 #bet_increase{
-  background-color: transparent;
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -106px;
   width: 240px;
   height: 104px;
   position: absolute;
   top: 356px;
   left: 40px;
   border-width: 0px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
 } 
 
 #bet_decrease{
-  background-color: transparent;
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -212px;
   width: 240px;
   height: 104px;
   position: absolute;
   top: 356px;
   left: 296px;
   border-width: 0px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
 } 
 
 #deal{
-  background-color: transparent;
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px 0px;
   width: 240px;
   height: 104px;
   position: absolute;
   top: 236px;
   left: 296px;
   border-width: 0px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
 }
 
 #bet_amount{
-  text-align: right;
-  vertical-align: middle;
-  width: 176px;
-  height: 86px;
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -496px 0px;
+  width: 240px;
+  height: 104px;
   position: absolute;
-  top: 245px;
-  left: 96px;
-  color: #b749ff;
-  margin: 0px;
-  font-size: 75px;
+  top: 237px;
+  left: 41px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
 }
 
+#hit{
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -318px;
+  width: 240px;
+  height: 104px;
+  position: absolute;
+  top: 236px;
+  left: 296px;
+  border-width: 0px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
+}
+
+#stand{
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -424px;
+  width: 240px;
+  height: 104px;
+  position: absolute;
+  top: 236px;
+  left: 296px;
+  border-width: 0px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
+}
+
+#ins-yes{
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -530px;
+  width: 240px;
+  height: 104px;
+  position: absolute;
+  top: 236px;
+  left: 296px;
+  border-width: 0px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
+}
+
+#ins-no{
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -636px;
+  width: 240px;
+  height: 104px;
+  position: absolute;
+  top: 236px;
+  left: 296px;
+  border-width: 0px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
+}
+
+#split{
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -742px;
+  width: 240px;
+  height: 104px;
+  position: absolute;
+  top: 236px;
+  left: 296px;
+  border-width: 0px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
+}
+
+#double{
+  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -848px;
+  width: 240px;
+  height: 104px;
+  position: absolute;
+  top: 236px;
+  left: 296px;
+  border-width: 0px;
+  image-rendering: pixelated;
+  background-size: 736px 961px;
+}
+
+/*Card Positioning*/
 .card-back {
   width: 110px;
   height: 90px;

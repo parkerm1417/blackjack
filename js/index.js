@@ -195,8 +195,8 @@ function logic() {
 function logicBetting() {
   $("#playerButtons").empty();
   $("#playerButtons").append(`
-    <div id="betting-buttons">
-      <p id="bet_amount"></p>
+    <div id="four-button-box">
+      <div id="bet_amount"></div>
       <button class="btn-large" id="bet_increase"></button>
       <button class="btn-large" id="bet_decrease"></button>
       <button class="btn-large" id="deal"></button>
@@ -212,9 +212,16 @@ function logicBetting() {
     }
   });
 
-  $('#bet_increase').on('mouseover', function () {
-    $("#betting-buttons").style.background = "url(../img/ButtonSpriteSheet.png) no-repeat -584px";
-  });
+  $('#bet_increase').hover(
+    function(){
+      $('#bet_increase').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -106px');
+      $('#bet_increase').css('background-size', '736px 961px');
+    },
+    function(){
+      $('#bet_increase').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -106px');
+      $('#bet_increase').css('background-size', '736px 961px');
+    }
+  )
 
   $('#bet_decrease').on('click', function () {
     if (playerBet > 0) {
@@ -222,6 +229,17 @@ function logicBetting() {
       updateBetDisplay();
     }
   });
+
+  $('#bet_decrease').hover(
+    function(){
+      $('#bet_decrease').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -212px');
+      $('#bet_decrease').css('background-size', '736px 961px');
+    },
+    function(){
+      $('#bet_decrease').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -212px');
+      $('#bet_decrease').css('background-size', '736px 961px');
+    }
+  )
 
   $('#deal').on('click', function () {
     $("#handResult").empty();
@@ -236,6 +254,17 @@ function logicBetting() {
       $("#handResult").append("Please place a bet to start the game.");
     }
   });
+
+  $('#deal').hover(
+    function(){
+      $('#deal').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px 0px');
+      $('#deal').css('background-size', '736px 961px');
+    },
+    function(){
+      $('#deal').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px 0px');
+      $('#deal').css('background-size', '736px 961px');
+    }
+  )
 }
 
 // Start a new hand
@@ -511,7 +540,6 @@ async function logicInsurance() {
 function updateBetDisplay() {
   $('#playerMoney').text(`Player Money: $${playerMoney}`);
   $('#currentBet').text(`Current Bet: $${playerBet}`);
-  $('#bet_amount').text(playerBet);
   if(totalHandBet > 0){
     $('#totalHandBet').text(`Total Hand Bet: $${totalHandBet}`);
   }else{
