@@ -19,6 +19,55 @@ body {
   font-size: x-large;
 }
 
+#betting-buttons{
+  width: 575px;
+  height: 303px;
+  background: url(../img/ButtonSpriteSheet.png) no-repeat;
+}
+
+#bet_increase{
+  background-color: transparent;
+  width: 240px;
+  height: 104px;
+  position: absolute;
+  top: 356px;
+  left: 40px;
+  border-width: 0px;
+} 
+
+#bet_decrease{
+  background-color: transparent;
+  width: 240px;
+  height: 104px;
+  position: absolute;
+  top: 356px;
+  left: 296px;
+  border-width: 0px;
+} 
+
+#deal{
+  background-color: transparent;
+  width: 240px;
+  height: 104px;
+  position: absolute;
+  top: 236px;
+  left: 296px;
+  border-width: 0px;
+}
+
+#bet_amount{
+  text-align: right;
+  vertical-align: middle;
+  width: 176px;
+  height: 86px;
+  position: absolute;
+  top: 245px;
+  left: 96px;
+  color: #b749ff;
+  margin: 0px;
+  font-size: 75px;
+}
+
 .card-back {
   width: 110px;
   height: 90px;

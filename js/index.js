@@ -12,6 +12,11 @@ const CARD_HEIGHT = 9; // Height of each card in the sprite sheet
 const CARD_GAP = 1;
 const SPRITE_COLUMNS = 13; // Number of columns in the sprite sheet
 
+const BUTTON_WIDTH = 0;
+const BUTTON_HEIGHT = 0;
+const BUTTON_GAP = 0;
+const BUTTON_COLUMNS = 0;
+
 // Mapping card codes to their positions in the sprite sheet
 const CARD_POSITIONS = {
   'AC': 0, '2C': 1, '3C': 2, '4C': 3, '5C': 4, '6C': 5, '7C': 6, '8C': 7, '9C': 8, '0C': 9, 'JC': 10, 'QC': 11, 'KC': 12,
@@ -191,17 +196,24 @@ function logicBetting() {
   $("#playerButtons").empty();
   $("#playerButtons").append(`
     <div id="betting-buttons">
-      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="bet_increase">Bet+</button>
-      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="bet_decrease">Bet-</button>
-      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="deal">Deal</button>
+      <p id="bet_amount"></p>
+      <button class="btn-large" id="bet_increase"></button>
+      <button class="btn-large" id="bet_decrease"></button>
+      <button class="btn-large" id="deal"></button>
     </div>
   `);
+
+  updateBetDisplay();
 
   $('#bet_increase').on('click', function () {
     if (playerMoney >= playerBet + 10) {
       playerBet += 10;
       updateBetDisplay();
     }
+  });
+
+  $('#bet_increase').on('mouseover', function () {
+    $("#betting-buttons").style.background = "url(../img/ButtonSpriteSheet.png) no-repeat -584px";
   });
 
   $('#bet_decrease').on('click', function () {
@@ -499,6 +511,7 @@ async function logicInsurance() {
 function updateBetDisplay() {
   $('#playerMoney').text(`Player Money: $${playerMoney}`);
   $('#currentBet').text(`Current Bet: $${playerBet}`);
+  $('#bet_amount').text(playerBet);
   if(totalHandBet > 0){
     $('#totalHandBet').text(`Total Hand Bet: $${totalHandBet}`);
   }else{
@@ -522,4 +535,11 @@ async function updateScores(dealerOnly = false) {
 // Initialize game on page load
 $(document).ready(function () {
   init();
+  $('#dealerHand').empty();
+  $('#playerHand').empty();
+
+  $('#playerHand').append('<div class="card-back"></div>');
+  $('#playerHand').append('<div class="card-back"></div>');
+  $('#dealerHand').append('<div class="card-back"></div>');
+  $('#dealerHand').append('<div class="card-back"></div>');
 });
