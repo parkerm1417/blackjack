@@ -12,10 +12,7 @@ const CARD_HEIGHT = 9; // Height of each card in the sprite sheet
 const CARD_GAP = 1;
 const SPRITE_COLUMNS = 13; // Number of columns in the sprite sheet
 
-const BUTTON_WIDTH = 0;
-const BUTTON_HEIGHT = 0;
-const BUTTON_GAP = 0;
-const BUTTON_COLUMNS = 0;
+const BET_AMOUNTS = {1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100}; 
 
 // Mapping card codes to their positions in the sprite sheet
 const CARD_POSITIONS = {
@@ -32,7 +29,7 @@ let deckId = "";
 let deck_count = 6;
 let dealerHasPlayed = false;
 let cardsLeft = deck_count * 52; // 52 cards per deck
-let playerBet = 10;   // Player's current bet
+let playerBet = 1;   // Player's current bet
 let totalHandBet = 0; // Total bet across all hands
 let playerMoney = 1000; // Player's total money
 let insuranceBet = 0; // Insurance bet
@@ -206,38 +203,34 @@ function logicBetting() {
   updateBetDisplay();
 
   $('#bet_increase').on('click', function () {
-    if (playerMoney >= playerBet + 10) {
-      playerBet += 10;
+    if (playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7) {
+      playerBet += 1;
       updateBetDisplay();
     }
   });
 
   $('#bet_increase').hover(
     function(){
-      $('#bet_increase').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -106px');
-      $('#bet_increase').css('background-size', '736px 961px');
+      $('#bet_increase').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -106px / 736px 961px');
     },
     function(){
-      $('#bet_increase').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -106px');
-      $('#bet_increase').css('background-size', '736px 961px');
+      $('#bet_increase').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -106px / 736px 961px');
     }
   )
 
   $('#bet_decrease').on('click', function () {
-    if (playerBet > 0) {
-      playerBet -= 10;
+    if (playerBet > 1) {
+      playerBet -= 1;
       updateBetDisplay();
     }
   });
 
   $('#bet_decrease').hover(
     function(){
-      $('#bet_decrease').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -212px');
-      $('#bet_decrease').css('background-size', '736px 961px');
+      $('#bet_decrease').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -212px / 736px 961px');
     },
     function(){
-      $('#bet_decrease').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -212px');
-      $('#bet_decrease').css('background-size', '736px 961px');
+      $('#bet_decrease').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -212px / 736px 961px');
     }
   )
 
@@ -257,12 +250,10 @@ function logicBetting() {
 
   $('#deal').hover(
     function(){
-      $('#deal').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px 0px');
-      $('#deal').css('background-size', '736px 961px');
+      $('#deal').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px 0px / 736px 961px');
     },
     function(){
-      $('#deal').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px 0px');
-      $('#deal').css('background-size', '736px 961px');
+      $('#deal').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px 0px / 736px 961px');
     }
   )
 }
@@ -308,19 +299,29 @@ async function logicNewHand() {
 function logicPlayerTurn() {
   $("#playerButtons").empty();
   let buttonsHtml = `
-    <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="hit">Hit</button>
-    <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="stand">Stand</button>
+      <button class="btn-large" id="hit"></button>
+      <button class="btn-large" id="stand"></button>
   `;
 
   // Show Double Down button if applicable
   if (player.hand.length === 2 && (player.total === 9 || player.total === 10 || player.total === 11) && playerMoney >= playerBet && splitHands.length === 0) {
-    buttonsHtml += `<button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="double">Double Down</button>`;
+    buttonsHtml = '<div id="four-button-box">' + buttonsHtml;
+    buttonsHtml += `<button class="btn-large" id="double"></button>`;
   }
 
   // Show Split button if applicable
   if (player.hand.length === 2 && player.hand[0].charAt(0) === player.hand[1].charAt(0) && playerMoney >= playerBet) {
-    buttonsHtml += `<button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="split">Split</button>`;
+    if(buttonsHtml[1] != "d"){
+      buttonsHtml = '<div id="four-button-box">' + buttonsHtml;
+    }
+    buttonsHtml += `<button class="btn-large" id="split"></button>`;
   }
+
+  if(buttonsHtml[1] != "d"){
+    buttonsHtml = '<div id="two-button-box">' + buttonsHtml;
+  }
+
+  buttonsHtml += '</div>';
 
   $("#playerButtons").html(buttonsHtml);
 
@@ -342,6 +343,15 @@ function logicPlayerTurn() {
     }
   });
 
+  $('#hit').hover(
+    function(){
+      $('#hit').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -318px / 736px 961px');
+    },
+    function(){
+      $('#hit').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -318px / 736px 961px');
+    }
+  )
+
   $('#stand').on('click', function () {
     $('#double').remove();
     $('#split').remove();
@@ -355,6 +365,15 @@ function logicPlayerTurn() {
     }
     logic();
   });
+
+  $('#stand').hover(
+    function(){
+      $('#stand').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -424px / 736px 961px');
+    },
+    function(){
+      $('#stand').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -424px / 736px 961px');
+    }
+  )
 
   $('#double').on('click', async function () {
     if (playerMoney >= playerBet) {
@@ -383,6 +402,15 @@ function logicPlayerTurn() {
     }
   });
 
+  $('#double').hover(
+    function(){
+      $('#double').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -859px / 736px 961px');
+    },
+    function(){
+      $('#double').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -859px / 736px 961px');
+    }
+  )
+
   $('#split').on('click', async function () {
     $('#double').remove();
     if (player.hand.length === 2 && player.hand[0].charAt(0) === player.hand[1].charAt(0) && playerMoney >= playerBet) {
@@ -403,6 +431,15 @@ function logicPlayerTurn() {
       $("#handResult").append("Cannot split this hand.");
     }
   });
+
+  $('#split').hover(
+    function(){
+      $('#split').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -751px / 736px 961px');
+    },
+    function(){
+      $('#split').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -751px / 736px 961px');
+    }
+  )
 }
 
 // Handle split logic
@@ -489,14 +526,13 @@ async function logicReward() {
 async function logicInsurance() {
   $("#playerButtons").empty();
   $("#playerButtons").append(`
-    <div id="insurance-buttons">
-      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="insurance_yes">Insurance</button>
-      <button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="insurance_no">No Insurance</button>
-      <br> IF DEALER HAS BLACKJACK, INSURANCE PAYS 2:1.
+    <div id="ins-button-box">
+      <button class="btn-large" id="ins-yes"></button>
+      <button class="btn-large" id="ins-no"></button>
     </div>
   `);
 
-  $('#insurance_yes').on('click', async function () {
+  $('#ins-yes').on('click', async function () {
     if (playerMoney >= playerBet / 2) {
       playerMoney -= playerBet / 2;
       insuranceBet = playerBet / 2;
@@ -520,7 +556,16 @@ async function logicInsurance() {
     }
   });
 
-  $('#insurance_no').on('click', async function () {
+  $('#ins-yes').hover(
+    function(){
+      $('#ins-yes').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -535px / 736px 961px');
+    },
+    function(){
+      $('#ins-yes').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -535px / 736px 961px');
+    }
+  )
+
+  $('#ins-no').on('click', async function () {
     if (dealer.total === 21) {
       if (!dealerHasPlayed) {
         await displayDealerCards();
@@ -534,12 +579,22 @@ async function logicInsurance() {
     }
     logic();
   });
+
+  $('#ins-no').hover(
+    function(){
+      $('#ins-no').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat 0px -643px / 736px 961px');
+    },
+    function(){
+      $('#ins-no').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -248px -643px / 736px 961px');
+    }
+  )
 }
 
 // Update the displayed bet and player's total money
 function updateBetDisplay() {
   $('#playerMoney').text(`Player Money: $${playerMoney}`);
-  $('#currentBet').text(`Current Bet: $${playerBet}`);
+  $('#currentBet').text(`Current Bet: $${BET_AMOUNTS[playerBet]}`);
+  $('#bet_amount').css('background', 'url(../blackjack/img/ButtonSpriteSheet.png) no-repeat -496px ' + (playerBet - 1)*-108 + 'px / 736px 961px');
   if(totalHandBet > 0){
     $('#totalHandBet').text(`Total Hand Bet: $${totalHandBet}`);
   }else{
