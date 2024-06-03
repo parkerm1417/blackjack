@@ -10,22 +10,15 @@ import { getCardBackgroundPosition, getButtonBackgroundPosition, getScoreBackgro
 export function displayStartingHands() {
   $('#dealerHand').empty();
   $('#playerHand').empty();
-
-  //////////////////////////////////////////////////////////////////////////
-  // SET UP SLOT FOR ARROW WHEN THERE'S MULTIPLE HANDS DUE TO USING SPLIT //
-  //////////////////////////////////////////////////////////////////////////
-
-  let currentHandPosition = getScoreBackgroundPosition(0); // 0 = blank (used when only one hand)
-  let $currentHand = $('<div class="currentHand"></div>').css('background-position', currentHandPosition);
-  $('#playerHand').append($currentHand); // add blank to both dealer and player to start 
-  $('#dealerHand').append($currentHand); // dealer can't split, but this will keep things aligned
+  $('#playerHand').append('<div id="hand1" class="no-arrow"></div>');
+  $('#dealerHand').append('<div class="no-arrow"></div>');
 
   ///////////////////////////////////
   // SET UP AREA FOR DEALER'S HAND //
   ///////////////////////////////////
 
   // area for dealer's total hand value
-  let dealerScorePosition = getScoreBackgroundPosition(2); // 2 = ?
+  let dealerScorePosition = getScoreBackgroundPosition(`questionMark`);
   let $dealerScore = $('<div class="dealerScore"></div>').css('background-position', dealerScorePosition);
   $('#dealerHand').append($dealerScore);
 
@@ -39,8 +32,8 @@ export function displayStartingHands() {
   ///////////////////////////////////
 
   // area for player's hand value
-  let playerScorePosition = getScoreBackgroundPosition(2); // 2 = ? (start with ? then update)
-  let $playerScore = $('<div class="playerScore"></div>').css('background-position', playerScorePosition);
+  let playerScorePosition = getScoreBackgroundPosition(`questionMark`); // start with ? then update
+  let $playerScore = $('<div class="hand-total"></div>').css('background-position', playerScorePosition);
   $('#playerHand').append($playerScore);
 
   // area for player's hand
@@ -115,12 +108,17 @@ export function updateBetDisplay() {
 export async function updateScores(dealerOnly = false) {
   if (!dealerOnly) {
     if (splitHands.length > 0) {
+      splitHands.forEach((hand) => {
+        $(`#hand${index + 1}`).next(`.hand-total`).css('background-position', getScoreBackgroundPosition(hand.total));
+      });
       let playerScores = splitHands.map((hand, index) => `HAND ${index + 1}: ${hand.total}`).join("<br>");
       $('#playerTotal').html(playerScores);
     } else {
-
+      $(`#hand1`).next(`.hand-total`).css('background-position', getScoreBackgroundPosition(player.total));
       $('#playerTotal').text(`Player Total: ${player.total}`);
     }
   }
-  $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '??'}`);
+
+  $('.dealerScore').css('background-position', getScoreBackgroundPosition(`${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : 'questionMark'}`));
+  $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '?'}`);
 }

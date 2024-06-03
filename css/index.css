@@ -222,10 +222,19 @@ nav .brand-logo {
   background-size: 1790px 410px;
 }
 
-.hand-total{
+.arrow {
   width: 170px;
   height: 130px;
-  background: url('../img/score.png') no-repeat -360px 0;
+  background: url('../img/score.png') no-repeat -180px 0;
+  margin: 5px;
+  image-rendering: pixelated;
+  background-size: 1790px 410px;
+}
+
+.hand-total, .dealerScore{
+  width: 170px;
+  height: 130px;
+  background: url('../img/score.png') no-repeat;
   margin: 5px;
   display: inline-block;
   image-rendering: pixelated;

@@ -40,8 +40,8 @@ function logicBetting() {
   $("#playerButtons").empty();
   $("#playerButtons").append(`
     <div id="four-button-box">
-      <div id="bet_amount"></div>
       <div id="bet_increase"></div>
+      <div id="bet_amount"></div>
       <div id="bet_decrease"></div>
       <div id="deal"></div>
     </div>
@@ -196,6 +196,10 @@ function logicPlayerTurn() {
   $('#hit').on('click', async function () {
     $('#double').remove();
     $('#split').remove();
+
+    // Change the ID from four-button-box to two-button-box
+    $('#four-button-box').attr('id', 'two-button-box');
+
     await drawCard(player);
     await displayNewPlayerCard();
     if (player.total > 21) {
@@ -223,6 +227,10 @@ function logicPlayerTurn() {
   $('#stand').on('click', function () {
     $('#double').remove();
     $('#split').remove();
+
+    // Change the ID from four-button-box to two-button-box
+    $('#four-button-box').attr('id', 'two-button-box');
+
     if (splitHands.length > 0 && currentHandIndex < splitHands.length - 1) {
       splitHands[currentHandIndex] = { ...player };
       setCurrentHandIndex(currentHandIndex + 1);

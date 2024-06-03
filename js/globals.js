@@ -42,9 +42,9 @@ export const SCORE_SPRITE_COLUMNS = 10;
 export const SCORE_CARD_SCALE = 10;
 
 export const SCORE_SPRITE_POSITIONS = {
-  'blank': 0, 'arrow': 1, 'questionMark': 2, 'handSum4': 3, 'handSum5': 4, 'handSum6': 5, 'handSum7': 6, 'handSum8': 7, 'handSum9': 8, 'handSum10': 9,
-  'handSum11': 10, 'handSum12': 11, 'handSum13': 12, 'handSum14': 13, 'handSum15': 14, 'handSum16': 15, 'handSum17': 16, 'handSum18': 17, 'handSum19': 18, 'handSum20': 19, 'handSum21': 20,
-  'handSum22': 21, 'handSum23': 22, 'handSum24': 23, 'handSum25': 24, 'handSum26': 25, 'handSum27': 26, 'handSum28': 27, 'handSum29': 28, 'handSum30': 29
+  'blank': 0, 'arrow': 1, 'questionMark': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9,
+  '11': 10, '12': 11, '13': 12, '14': 13, '15': 14, '16': 15, '17': 16, '18': 17, '19': 18, '20': 19, '21': 20,
+  '22': 21, '23': 22, '24': 23, '25': 24, '26': 25, '27': 26, '28': 27, '29': 28, '30': 29
 };
 
 // BUTTON SPRITE SHEET
