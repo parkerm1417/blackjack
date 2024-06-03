@@ -20,6 +20,7 @@ export async function updateTotal(person, cardValue) {
     person.aceIs11 -= 1;
   }
 }
+
 // Generic function to calculate background position
 function getBackgroundPosition(code, positions, width, height, gap, columns, scale) {
   let position = positions[code];
