@@ -23,7 +23,7 @@ body {
 #four-button-box {
   width: 575px;
   height: 304px;
-  background: url(../img/ButtonBackground.png) no-repeat 0 -311px;
+  background: url(../img/ui.png) no-repeat 0 -311px;
   image-rendering: pixelated;
   background-size: cover;
   position: relative;
@@ -32,7 +32,7 @@ body {
 #two-button-box {
   width: 575px;
   height: 185px;
-  background: url(../img/ButtonBackground.png) no-repeat;
+  background: url(../img/ui.png) no-repeat;
   image-rendering: pixelated;
   background-size: cover;
   position: relative;
@@ -41,7 +41,7 @@ body {
 #ins-button-box {
   width: 575px;
   height: 304px;
-  background: url(../img/ButtonBackground.png) no-repeat 0 -622px;
+  background: url(../img/ui.png) no-repeat 0 -622px;
   image-rendering: pixelated;
   background-size: cover;
   position: relative;
@@ -49,7 +49,7 @@ body {
 
 /*Button Positioning*/
 #bet_increase{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -106px;
+  background: url(../img/buttons.png) no-repeat -248px -106px;
   width: 240px;
   height: 104px;
   position: absolute;
@@ -61,7 +61,7 @@ body {
 } 
 
 #bet_decrease{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -212px;
+  background: url(../img/buttons.png) no-repeat -248px -212px;
   width: 240px;
   height: 104px;
   position: absolute;
@@ -73,7 +73,7 @@ body {
 } 
 
 #deal{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px 0px;
+  background: url(../img/buttons.png) no-repeat -248px 0px;
   width: 240px;
   height: 104px;
   position: absolute;
@@ -85,7 +85,7 @@ body {
 }
 
 #bet_amount{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -496px 0px;
+  background: url(../img/buttons.png) no-repeat -496px 0px;
   width: 240px;
   height: 104px;
   position: absolute;
@@ -96,7 +96,7 @@ body {
 }
 
 #hit{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -318px;
+  background: url(../img/buttons.png) no-repeat -248px -318px;
   width: 240px;
   height: 104px;
   position: absolute;
@@ -108,7 +108,7 @@ body {
 }
 
 #stand{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -424px;
+  background: url(../img/buttons.png) no-repeat -248px -424px;
   width: 240px;
   height: 104px;
   position: absolute;
@@ -120,7 +120,7 @@ body {
 }
 
 #ins-yes{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -535px;
+  background: url(../img/buttons.png) no-repeat -248px -535px;
   width: 240px;
   height: 104px;
   position: absolute;
@@ -132,7 +132,7 @@ body {
 }
 
 #ins-no{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -643px;
+  background: url(../img/buttons.png) no-repeat -248px -643px;
   width: 240px;
   height: 104px;
   position: absolute;
@@ -144,7 +144,7 @@ body {
 }
 
 #split{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -751px;
+  background: url(../img/buttons.png) no-repeat -248px -751px;
   width: 240px;
   height: 104px;
   position: absolute;
@@ -156,7 +156,7 @@ body {
 }
 
 #double{
-  background: url(../img/ButtonSpriteSheet.png) no-repeat -248px -859px;
+  background: url(../img/buttons.png) no-repeat -248px -859px;
   width: 240px;
   height: 104px;
   position: absolute;

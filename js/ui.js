@@ -75,7 +75,7 @@ export async function displaySplitHands() {
 export function updateBetDisplay() {
   $('#playerMoney').text(`Player Money: $${playerMoney}`);
   $('#currentBet').text(`Current Bet: $${BET_AMOUNTS[playerBet]}`);
-  $('#bet_amount').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -496px ' + (playerBet - 1)*-108 + 'px / 736px 961px');
+  $('#bet_amount').css('background', 'url(../img/buttons.png) no-repeat -496px ' + (playerBet - 1)*-108 + 'px / 736px 961px');
   if (totalHandBet > 0) {
     $('#totalHandBet').text(`Total Hand Bet: $${totalHandBet}`);
   } else {

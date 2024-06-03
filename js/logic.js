@@ -57,10 +57,10 @@ function logicBetting() {
 
   $('#bet_increase').hover(
     function(){
-      $('#bet_increase').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat 0px -106px / 736px 961px');
+      $('#bet_increase').css('background', 'url(../img/buttons.png) no-repeat 0px -106px / 736px 961px');
     },
     function(){
-      $('#bet_increase').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -248px -106px / 736px 961px');
+      $('#bet_increase').css('background', 'url(../img/buttons.png) no-repeat -248px -106px / 736px 961px');
     }
   )
 
@@ -73,10 +73,10 @@ function logicBetting() {
 
   $('#bet_decrease').hover(
     function(){
-      $('#bet_decrease').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat 0px -212px / 736px 961px');
+      $('#bet_decrease').css('background', 'url(../img/buttons.png) no-repeat 0px -212px / 736px 961px');
     },
     function(){
-      $('#bet_decrease').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -248px -212px / 736px 961px');
+      $('#bet_decrease').css('background', 'url(../img/buttons.png) no-repeat -248px -212px / 736px 961px');
     }
   )
 
@@ -95,10 +95,10 @@ function logicBetting() {
   });
   $('#deal').hover(
     function(){
-      $('#deal').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat 0px 0px / 736px 961px');
+      $('#deal').css('background', 'url(../img/buttons.png) no-repeat 0px 0px / 736px 961px');
     },
     function(){
-      $('#deal').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -248px 0px / 736px 961px');
+      $('#deal').css('background', 'url(../img/buttons.png) no-repeat -248px 0px / 736px 961px');
     }
   )
 }
@@ -190,10 +190,10 @@ function logicPlayerTurn() {
 
   $('#hit').hover(
     function(){
-      $('#hit').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat 0px -318px / 736px 961px');
+      $('#hit').css('background', 'url(../img/buttons.png) no-repeat 0px -318px / 736px 961px');
     },
     function(){
-      $('#hit').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -248px -318px / 736px 961px');
+      $('#hit').css('background', 'url(../img/buttons.png) no-repeat -248px -318px / 736px 961px');
     }
   )
 
@@ -213,10 +213,10 @@ function logicPlayerTurn() {
 
   $('#stand').hover(
     function(){
-      $('#stand').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat 0px -424px / 736px 961px');
+      $('#stand').css('background', 'url(../img/buttons.png) no-repeat 0px -424px / 736px 961px');
     },
     function(){
-      $('#stand').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -248px -424px / 736px 961px');
+      $('#stand').css('background', 'url(../img/buttons.png) no-repeat -248px -424px / 736px 961px');
     }
   )
 
@@ -248,10 +248,10 @@ function logicPlayerTurn() {
 
   $('#double').hover(
     function(){
-      $('#double').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat 0px -859px / 736px 961px');
+      $('#double').css('background', 'url(../img/buttons.png) no-repeat 0px -859px / 736px 961px');
     },
     function(){
-      $('#double').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -248px -859px / 736px 961px');
+      $('#double').css('background', 'url(../img/buttons.png) no-repeat -248px -859px / 736px 961px');
     }
   )
 
@@ -278,10 +278,10 @@ function logicPlayerTurn() {
 
   $('#split').hover(
     function(){
-      $('#split').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat 0px -751px / 736px 961px');
+      $('#split').css('background', 'url(../img/buttons.png) no-repeat 0px -751px / 736px 961px');
     },
     function(){
-      $('#split').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -248px -751px / 736px 961px');
+      $('#split').css('background', 'url(../img/buttons.png) no-repeat -248px -751px / 736px 961px');
     }
   )
 }
@@ -345,10 +345,10 @@ export async function logicInsurance() {
 
   $('#ins-yes').hover(
     function(){
-      $('#ins-yes').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat 0px -535px / 736px 961px');
+      $('#ins-yes').css('background', 'url(../img/buttons.png) no-repeat 0px -535px / 736px 961px');
     },
     function(){
-      $('#ins-yes').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -248px -535px / 736px 961px');
+      $('#ins-yes').css('background', 'url(../img/buttons.png) no-repeat -248px -535px / 736px 961px');
     }
   )
 
@@ -368,10 +368,10 @@ export async function logicInsurance() {
 
   $('#ins-no').hover(
     function(){
-      $('#ins-no').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat 0px -643px / 736px 961px');
+      $('#ins-no').css('background', 'url(../img/buttons.png) no-repeat 0px -643px / 736px 961px');
     },
     function(){
-      $('#ins-no').css('background', 'url(../img/ButtonSpriteSheet.png) no-repeat -248px -643px / 736px 961px');
+      $('#ins-no').css('background', 'url(../img/buttons.png) no-repeat -248px -643px / 736px 961px');
     }
   )
 }
