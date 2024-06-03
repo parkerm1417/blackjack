@@ -5,6 +5,7 @@ import {
   setGameState, setPlayerBet, setSplitHands, setCurrentHandIndex, setPlayerMoney, setTotalHandBet, setDealerHasPlayed, setInsuranceBet
 } from './globals.js';
 import { displayStartingHands, displayDealerCards, displayNewDealerCard, displayNewPlayerCard, displaySplitHands, updateBetDisplay, updateScores } from './ui.js';
+import { getButtonBackgroundPosition } from './utils.js';
 
 // Main game logic controller
 export function logic() {
@@ -40,9 +41,9 @@ function logicBetting() {
   $("#playerButtons").append(`
     <div id="four-button-box">
       <div id="bet_amount"></div>
-      <button class="btn-large" id="bet_increase"></button>
-      <button class="btn-large" id="bet_decrease"></button>
-      <button class="btn-large" id="deal"></button>
+      <div id="bet_increase"></div>
+      <div id="bet_decrease"></div>
+      <div id="deal"></div>
     </div>
   `);
 
@@ -51,32 +52,37 @@ function logicBetting() {
   $('#bet_increase').on('click', function () {
     if (playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7) {
       setPlayerBet(playerBet + 1);
-      updateBetDisplay();
+
+    } else {
+      setPlayerBet(1);
     }
+    updateBetDisplay();
   });
 
   $('#bet_increase').hover(
-    function(){
-      $('#bet_increase').css('background', 'url(../img/buttons.png) no-repeat 0px -106px / 736px 961px');
+    function () {
+      $('#bet_increase').css('background-position', getButtonBackgroundPosition(`betIncreaseHover`));
     },
-    function(){
-      $('#bet_increase').css('background', 'url(../img/buttons.png) no-repeat -248px -106px / 736px 961px');
+    function () {
+      $('#bet_increase').css('background-position', getButtonBackgroundPosition(`betIncrease`));
     }
   )
 
   $('#bet_decrease').on('click', function () {
     if (playerBet > 1) {
       setPlayerBet(playerBet - 1);
-      updateBetDisplay();
+    } else {
+      setPlayerBet(7);
     }
+    updateBetDisplay();
   });
 
   $('#bet_decrease').hover(
-    function(){
-      $('#bet_decrease').css('background', 'url(../img/buttons.png) no-repeat 0px -212px / 736px 961px');
+    function () {
+      $('#bet_decrease').css('background-position', getButtonBackgroundPosition(`betDecreaseHover`));
     },
-    function(){
-      $('#bet_decrease').css('background', 'url(../img/buttons.png) no-repeat -248px -212px / 736px 961px');
+    function () {
+      $('#bet_decrease').css('background-position', getButtonBackgroundPosition(`betDecrease`));
     }
   )
 
@@ -93,12 +99,13 @@ function logicBetting() {
       $("#handResult").append("Please place a bet to start the game.");
     }
   });
+
   $('#deal').hover(
-    function(){
-      $('#deal').css('background', 'url(../img/buttons.png) no-repeat 0px 0px / 736px 961px');
+    function () {
+      $('#deal').css('background-position', getButtonBackgroundPosition(`dealHover`));
     },
-    function(){
-      $('#deal').css('background', 'url(../img/buttons.png) no-repeat -248px 0px / 736px 961px');
+    function () {
+      $('#deal').css('background-position', getButtonBackgroundPosition(`deal`));
     }
   )
 }
@@ -143,32 +150,48 @@ async function logicNewHand() {
 // Handle player's turn
 function logicPlayerTurn() {
   $("#playerButtons").empty();
+  let splitActive = false;
+  let doubleActive = false;
   let buttonsHtml = `
-      <button class="btn-large" id="hit"></button>
-      <button class="btn-large" id="stand"></button>
+      <div id="hit"></div>
+      <div id="stand"></div>
   `;
 
   // Show Double Down button if applicable
   if (player.hand.length === 2 && (player.total === 9 || player.total === 10 || player.total === 11) && playerMoney >= BET_AMOUNTS[playerBet] && splitHands.length === 0) {
+    doubleActive = true;
     buttonsHtml = '<div id="four-button-box">' + buttonsHtml;
-    buttonsHtml += `<button class="btn-large" id="double"></button>`;
+    buttonsHtml += `<div id="double" class="active"></div>`;
   }
 
   // Show Split button if applicable
   if (player.hand.length === 2 && player.hand[0].charAt(0) === player.hand[1].charAt(0) && playerMoney >= BET_AMOUNTS[playerBet]) {
-    if(buttonsHtml[1] != "d"){
+    splitActive = true;
+    if (buttonsHtml[1] != "d") {
       buttonsHtml = '<div id="four-button-box">' + buttonsHtml;
     }
-    buttonsHtml += `<button class="btn-large" id="split"></button>`;
+    if (!doubleActive) {
+      buttonsHtml += `<div id="double"></div>`;
+    }
+    buttonsHtml += `<div id="split" class="active"></div>`;
+
+  } else if (doubleActive) {
+    buttonsHtml += `<div id="split"></div>`;
   }
 
-  if(buttonsHtml[1] != "d"){
+  if (buttonsHtml[1] != "d") {
     buttonsHtml = '<div id="two-button-box">' + buttonsHtml;
   }
 
   buttonsHtml += '</div>';
 
   $("#playerButtons").html(buttonsHtml);
+  $('#hit').css('background-position', getButtonBackgroundPosition(`hit`));
+  $('#stand').css('background-position', getButtonBackgroundPosition(`stand`));
+  if (splitActive || doubleActive) {
+    splitActive ? $('#split').css('background-position', getButtonBackgroundPosition(`split`)) : $('#split').css('background-position', getButtonBackgroundPosition(`splitInactive`));
+    doubleActive ? $('#double').css('background-position', getButtonBackgroundPosition(`double`)) : $('#double').css('background-position', getButtonBackgroundPosition(`doubleInactive`));
+  }
 
   $('#hit').on('click', async function () {
     $('#double').remove();
@@ -189,11 +212,11 @@ function logicPlayerTurn() {
   });
 
   $('#hit').hover(
-    function(){
-      $('#hit').css('background', 'url(../img/buttons.png) no-repeat 0px -318px / 736px 961px');
+    function () {
+      $('#hit').css('background-position', getButtonBackgroundPosition(`hitHover`));
     },
-    function(){
-      $('#hit').css('background', 'url(../img/buttons.png) no-repeat -248px -318px / 736px 961px');
+    function () {
+      $('#hit').css('background-position', getButtonBackgroundPosition(`hit`));
     }
   )
 
@@ -212,11 +235,11 @@ function logicPlayerTurn() {
   });
 
   $('#stand').hover(
-    function(){
-      $('#stand').css('background', 'url(../img/buttons.png) no-repeat 0px -424px / 736px 961px');
+    function () {
+      $('#stand').css('background-position', getButtonBackgroundPosition(`standHover`));
     },
-    function(){
-      $('#stand').css('background', 'url(../img/buttons.png) no-repeat -248px -424px / 736px 961px');
+    function () {
+      $('#stand').css('background-position', getButtonBackgroundPosition(`stand`));
     }
   )
 
@@ -247,11 +270,15 @@ function logicPlayerTurn() {
   });
 
   $('#double').hover(
-    function(){
-      $('#double').css('background', 'url(../img/buttons.png) no-repeat 0px -859px / 736px 961px');
+    function () {
+      if ($('#double').hasClass('active')) {
+        $('#double').css('background-position', getButtonBackgroundPosition(`doubleHover`));
+      }
     },
-    function(){
-      $('#double').css('background', 'url(../img/buttons.png) no-repeat -248px -859px / 736px 961px');
+    function () {
+      if ($('#double').hasClass('active')) {
+        $('#double').css('background-position', getButtonBackgroundPosition(`double`));
+      }
     }
   )
 
@@ -277,11 +304,15 @@ function logicPlayerTurn() {
   });
 
   $('#split').hover(
-    function(){
-      $('#split').css('background', 'url(../img/buttons.png) no-repeat 0px -751px / 736px 961px');
+    function () {
+      if ($('#split').hasClass('active')) {
+        $('#split').css('background-position', getButtonBackgroundPosition(`splitHover`));
+      }
     },
-    function(){
-      $('#split').css('background', 'url(../img/buttons.png) no-repeat -248px -751px / 736px 961px');
+    function () {
+      if ($('#split').hasClass('active')) {
+        $('#split').css('background-position', getButtonBackgroundPosition(`split`));
+      }
     }
   )
 }
@@ -314,10 +345,13 @@ export async function logicInsurance() {
   $("#playerButtons").empty();
   $("#playerButtons").append(`
     <div id="ins-button-box">
-      <button class="btn-large" id="ins-yes"></button>
-      <button class="btn-large" id="ins-no"></button>
+      <div id="ins-yes"></div>
+      <div id="ins-no"></div>
     </div>
   `);
+
+  $('#ins-yes').css('background-position', getButtonBackgroundPosition(`yes`));
+  $('#ins-no').css('background-position', getButtonBackgroundPosition(`no`));
 
   $('#ins-yes').on('click', async function () {
     if (playerMoney >= BET_AMOUNTS[playerBet] / 2) {
@@ -344,11 +378,11 @@ export async function logicInsurance() {
   });
 
   $('#ins-yes').hover(
-    function(){
-      $('#ins-yes').css('background', 'url(../img/buttons.png) no-repeat 0px -535px / 736px 961px');
+    function () {
+      $('#ins-yes').css('background-position', getButtonBackgroundPosition(`yesHover`));
     },
-    function(){
-      $('#ins-yes').css('background', 'url(../img/buttons.png) no-repeat -248px -535px / 736px 961px');
+    function () {
+      $('#ins-yes').css('background-position', getButtonBackgroundPosition(`yes`));
     }
   )
 
@@ -367,11 +401,11 @@ export async function logicInsurance() {
   });
 
   $('#ins-no').hover(
-    function(){
-      $('#ins-no').css('background', 'url(../img/buttons.png) no-repeat 0px -643px / 736px 961px');
+    function () {
+      $('#ins-no').css('background-position', getButtonBackgroundPosition(`noHover`));
     },
-    function(){
-      $('#ins-no').css('background', 'url(../img/buttons.png) no-repeat -248px -643px / 736px 961px');
+    function () {
+      $('#ins-no').css('background-position', getButtonBackgroundPosition(`no`));
     }
   )
 }

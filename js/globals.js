@@ -35,8 +35,8 @@ export const UI_SPRITE_POSITIONS = {
 };
 
 // SCORE SPRITE SHEET
-export const SCORE_SPRITE_WIDTH = 179;
-export const SCORE_SPRITE_HEIGHT = 41;
+export const SCORE_SPRITE_WIDTH = 17;
+export const SCORE_SPRITE_HEIGHT = 13;
 export const SCORE_SPRITE_GAP = 1;
 export const SCORE_SPRITE_COLUMNS = 10;
 export const SCORE_CARD_SCALE = 10;
@@ -48,8 +48,8 @@ export const SCORE_SPRITE_POSITIONS = {
 };
 
 // BUTTON SPRITE SHEET
-export const BUTTON_SPRITE_WIDTH = 92;
-export const BUTTON_SPRITE_HEIGHT = 125;
+export const BUTTON_SPRITE_WIDTH = 30;
+export const BUTTON_SPRITE_HEIGHT = 13;
 export const BUTTON_SPRITE_GAP = 1;
 export const BUTTON_SPRITE_COLUMNS = 3;
 export const BUTTON_CARD_SCALE = 10;
