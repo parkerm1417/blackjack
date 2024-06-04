@@ -1,14 +1,12 @@
-import { deckId, setDeckId, deck_count, setCardsLeft } from './globals.js';
-import { logic } from './logic.js';
-import { updateBetDisplay, updateScores } from './ui.js';
+import { deckId, setDeckId, deck_count, setCardsLeft, currentHandIndex} from './globals.js';
 import { updateTotal } from './utils.js';
+import { displayNewPlayerCard } from './ui.js';
 
-export async function init() {
+export async function getDeck() {
   try {
+    console.log('Setting up Deck...');
     const data = await $.getJSON(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=${deck_count}`);
       setDeckId(data.deck_id);
-      updateBetDisplay();
-      logic();
   } catch (error) {
     console.error("Error initializing deck:", error);
   }
@@ -25,14 +23,28 @@ export async function shuffle() {
   }
 }
 
-export async function drawCard(person) {
+export async function drawCardDealer(dealer) {
   try {
     const data = await $.getJSON(`http://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`);
     const card = data.cards[0];
-    person.hand.push(card.code);
-    updateTotal(person, card.value);
+    dealer.hand.push(card.code);
+    updateTotal(dealer, card.value);
     setCardsLeft(data.remaining);
-    updateScores();
+  } catch (error) {
+    console.error("Error drawing card:", error);
+  }
+}
+
+export async function drawCard(player, displayCard = false) {
+  try {
+    const data = await $.getJSON(`http://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`);
+    const card = data.cards[0];
+    player.hands[currentHandIndex].hand.push(card.code);
+    updateTotal(player, card.value);
+    setCardsLeft(data.remaining);
+    if(displayCard){
+      await displayNewPlayerCard();
+    }
   } catch (error) {
     console.error("Error drawing card:", error);
   }

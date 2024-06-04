@@ -1,16 +1,17 @@
 import {
-  player, dealer, splitHands, totalHandBet, playerMoney, playerBet, gameState, currentHandIndex,
-  STATE_DEALERTURN, STATE_REWARD, BET_AMOUNTS,
-  setDealerHasPlayed
+  player, dealer, gameState, currentHandIndex,
+  STATE_DEALERTURN, STATE_REWARD, setDealerHasPlayed,
+  dealerHasPlayed
 } from './globals.js';
 
-import { getCardBackgroundPosition, getButtonBackgroundPosition, getScoreBackgroundPosition } from './utils.js';
+import { getCardBackgroundPosition, getScoreBackgroundPosition } from './utils.js';
+import { logic } from './game.js';
 
 // Display the starting hands of the player and dealer
 export function displayStartingHands() {
   $('#dealerHand').empty();
   $('#playerHand').empty();
-  $('#playerHand').append('<div id="hand1" class="no-arrow"></div>');
+  $('#playerHand').append('<div id="hand1" class="playerHands"><div class="no-arrow"></div></div>');
   $('#dealerHand').append('<div class="no-arrow"></div>');
 
   ///////////////////////////////////
@@ -23,9 +24,10 @@ export function displayStartingHands() {
   $('#dealerHand').append($dealerScore);
 
   // area for dealer's hand
-  let dealerBackgroundPosition = getCardBackgroundPosition(dealer.hand[0]);
-  $('#dealerHand').append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
   $('#dealerHand').append('<div class="card-back"></div>');
+  let dealerBackgroundPosition = getCardBackgroundPosition(dealer.hand[1]);
+  $('#dealerHand').append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
+  
 
   ///////////////////////////////////
   // SET UP AREA FOR PLAYER'S HAND //
@@ -34,24 +36,23 @@ export function displayStartingHands() {
   // area for player's hand value
   let playerScorePosition = getScoreBackgroundPosition(`questionMark`); // start with ? then update
   let $playerScore = $('<div class="hand-total"></div>').css('background-position', playerScorePosition);
-  $('#playerHand').append($playerScore);
+  $(`#hand${currentHandIndex + 1}`).append($playerScore);
 
   // area for player's hand
-  player.hand.forEach(card => {
+  player.hands[currentHandIndex].hand.forEach(card => {
     let backgroundPosition = getCardBackgroundPosition(card);
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
-    $('#playerHand').append($card);
+    $(`#hand${currentHandIndex + 1}`).append($card);
   });
+  updateScores();
 }
 
 // Display all dealer's cards
 export async function displayDealerCards() {
   $('.card-back').remove();
   dealer.hand.forEach((card, index) => {
-    if (index > 0) {
       let backgroundPosition = getCardBackgroundPosition(card);
       $('#dealerHand').append(`<div class="playingCard" style="background-position: ${backgroundPosition};"></div>`);
-    }
   });
   setDealerHasPlayed(true);
   await new Promise(resolve => setTimeout(resolve, 250));
@@ -65,60 +66,42 @@ export async function displayNewDealerCard() {
 }
 
 export async function displayNewPlayerCard() {
-  let card = player.hand[player.hand.length - 1];
+  let card = player.hands[currentHandIndex].hand[player.hands[currentHandIndex].hand.length - 1];
   let backgroundPosition = getCardBackgroundPosition(card);
   let $card = $(`<div class="playingCard" style="background-position: ${backgroundPosition};"></div>`);
-  if (splitHands.length > 0) {
-    $(`#hand${currentHandIndex + 1}`).append($card);
-  } else {
-    $('#playerHand').append($card);
-  }
+  $(`#hand${currentHandIndex + 1}`).append($card);
+  updateScores();
 }
 
 export async function displaySplitHands() {
-  $('#playerHand').empty();
-  splitHands.forEach((hand, index) => {
+  /* player.hands.forEach((hand, index) => {
     const handId = `hand${index + 1}`;
-    const handDiv = $(`<div id="${handId}" class="splitHand"></div>`).css({
-      'width': 'fit-content',
-      'padding-top': '4px',
-      'border': index === currentHandIndex ? '2px solid red' : 'none'
-    });
+
+    if (index === currentHandIndex) {
+      handDiv.append('<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>')
+    } else {
+      handDiv.append('<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>')
+    }
     hand.hand.forEach(card => {
       let backgroundPosition = getCardBackgroundPosition(card);
       let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
       handDiv.append($card);
     });
     $('#playerHand').append(handDiv);
-  });
-  await updateScores();
-}
-
-export function updateBetDisplay() {
-  $('#playerMoney').text(`Player Money: $${playerMoney}`);
-  $('#currentBet').text(`Current Bet: $${BET_AMOUNTS[playerBet]}`);
-  $('#bet_amount').css('background-position', getButtonBackgroundPosition(`bet${playerBet}`));
-  if (totalHandBet > 0) {
-    $('#totalHandBet').text(`Total Hand Bet: $${totalHandBet}`);
-  } else {
-    $('#totalHandBet').text('');
-  }
+  }); */
+  logic();
 }
 
 export async function updateScores(dealerOnly = false) {
   if (!dealerOnly) {
-    if (splitHands.length > 0) {
-      splitHands.forEach((hand) => {
-        $(`#hand${index + 1}`).next(`.hand-total`).css('background-position', getScoreBackgroundPosition(hand.total));
-      });
-      let playerScores = splitHands.map((hand, index) => `HAND ${index + 1}: ${hand.total}`).join("<br>");
-      $('#playerTotal').html(playerScores);
-    } else {
-      $(`#hand1`).next(`.hand-total`).css('background-position', getScoreBackgroundPosition(player.total));
-      $('#playerTotal').text(`Player Total: ${player.total}`);
-    }
+    player.hands.forEach((hand, index) => {
+      $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', getScoreBackgroundPosition(hand.total));
+    });
+    let playerScores = player.hands.map((hand, index) => `HAND ${index + 1}: ${hand.total}`).join("<br>");
+    $('#playerTotal').html(playerScores);
   }
-
-  $('.dealerScore').css('background-position', getScoreBackgroundPosition(`${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : 'questionMark'}`));
-  $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '?'}`);
+  if(dealerHasPlayed){
+    $('.dealerScore').css('background-position', getScoreBackgroundPosition(`${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : 'questionMark'}`));
+    $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '?'}`);
+  }
 }
