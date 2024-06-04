@@ -1,204 +1,175 @@
-#blackjack-buttons, #state-buttons, .total{
-  flex-direction: column;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: space-between;
-}
-
 body {
   background: url("../img/BJTable.PNG");
   background-size: 100%;
+  backdrop-filter: brightness(0.5);
   height: 100%;
   width: 100%;
   position: fixed;
   font-family: 'quicksandregular';
-}
-
-.btn-large {
-  text-transform: capitalize;
-  font-size: x-large;
+  color: white;
 }
 
 /*Button Boxes*/
 #four-button-box {
-  width: 575px;
-  height: 304px;
-  background: url(../img/ui.png) no-repeat 0 -311px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
   image-rendering: pixelated;
-  background-size: cover;
   position: relative;
+  width: 720px;
+  height: 380px;
+  background: url('../img/ui.png') no-repeat 0 -240px;
+  background-size: 720px 1000px;
 }
 
 #two-button-box {
-  width: 575px;
-  height: 185px;
-  background: url(../img/ui.png) no-repeat;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
   image-rendering: pixelated;
-  background-size: cover;
   position: relative;
+  width: 720px;
+  height: 230px;
+  background: url('../img/ui.png') no-repeat 0 0;
+  background-size: 720px 1000px;
 }
 
 #ins-button-box {
-  width: 575px;
-  height: 304px;
-  background: url(../img/ui.png) no-repeat 0 -622px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: end;
+  justify-content: center;
   image-rendering: pixelated;
-  background-size: cover;
   position: relative;
-}
+  width: 720px;
+  height: 370px;
+  background: url('../img/ui.png') no-repeat 0 -630px;
+  background-size: 720px 1000px;}
 
 /*Button Positioning*/
-#bet_increase{
-  background: url(../img/buttons.png) no-repeat -248px -106px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 161px;
-  left: 40px;
-  border-width: 0px;
+#bet_amount{
   image-rendering: pixelated;
-  background-size: 736px 961px;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
+}
+
+#deal{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat -310px 0px;
+  background-size: 920px 1250px;
+}
+
+#bet_increase{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat -310px -140px;
+  background-size: 920px 1250px;
 } 
 
 #bet_decrease{
-  background: url(../img/buttons.png) no-repeat -248px -212px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 161px;
-  left: 296px;
-  border-width: 0px;
   image-rendering: pixelated;
-  background-size: 736px 961px;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat -310px -280px;
+  background-size: 920px 1250px;
 } 
 
-#deal{
-  background: url(../img/buttons.png) no-repeat -248px 0px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 42px;
-  left: 296px;
-  border-width: 0px;
-  image-rendering: pixelated;
-  background-size: 736px 961px;
-}
-
-#bet_amount{
-  background: url(../img/buttons.png) no-repeat -496px 0px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 42px;
-  left: 41px;
-  image-rendering: pixelated;
-  background-size: 736px 961px;
-}
-
 #hit{
-  background: url(../img/buttons.png) no-repeat -248px -318px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 35px;
-  left: 40px;
-  border-width: 0px;
   image-rendering: pixelated;
-  background-size: 736px 961px;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
 }
 
 #stand{
-  background: url(../img/buttons.png) no-repeat -248px -424px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 35px;
-  left: 296px;
-  border-width: 0px;
   image-rendering: pixelated;
-  background-size: 736px 961px;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
 }
 
 #ins-yes{
-  background: url(../img/buttons.png) no-repeat -248px -535px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 161px;
-  left: 40px;
-  border-width: 0px;
   image-rendering: pixelated;
-  background-size: 736px 961px;
+  margin: 10px 10px 50px 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
 }
 
 #ins-no{
-  background: url(../img/buttons.png) no-repeat -248px -643px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 161px;
-  left: 296px;
-  border-width: 0px;
   image-rendering: pixelated;
-  background-size: 736px 961px;
+  margin: 10px 10px 50px 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
 }
 
 #split{
-  background: url(../img/buttons.png) no-repeat -248px -751px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 161px;
-  left: 40px;
-  border-width: 0px;
   image-rendering: pixelated;
-  background-size: 736px 961px;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
 }
 
 #double{
-  background: url(../img/buttons.png) no-repeat -248px -859px;
-  width: 240px;
-  height: 104px;
-  position: absolute;
-  top: 161px;
-  left: 296px;
-  border-width: 0px;
   image-rendering: pixelated;
-  background-size: 736px 961px;
-}
-
-/*Card Positioning*/
-.card-back {
-  width: 110px;
-  height: 90px;
-  background: url('../img/cards.png') no-repeat -1560px 0;
-  padding: 2px;
-  display: inline-block;
-  image-rendering: pixelated;
-  background-size: 1670px 390px;
-}
-
-
-.playingCard {
-  width: 110px;
-  height: 90px;
-  background: url('../img/cards.png') no-repeat;
-  padding: 2px;
-  display: inline-block; 
-  image-rendering: pixelated;
-  background-size: 1670px 390px;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
 }
 
 div p {
   font-size: 20px;
 }
 
-#dealerHand, #playerHand {
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#dealerHand {
+  display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
   align-items: center;
-  align-content: space-around;
   justify-content: center;
+  transform: translateX(calc(-170px/2)); /*transform half the width of the arrow graphic*/
+}
+
+#playerHand {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(calc(-170px/2)); /*transform half the width of the arrow graphic*/
+}
+
+.splitHand{
+  display: block;
 }
 
 #handResult {
@@ -240,6 +211,56 @@ nav .brand-logo {
 .total{
   font-family: 'quicksanddash';
 }
+
+/*Sprite Positioning*/
+.no-arrow {
+  width: 170px;
+  height: 130px;
+  background: url('../img/score.png') no-repeat 0 0;
+  margin: 5px;
+  image-rendering: pixelated;
+  background-size: 1790px 410px;
+}
+
+.arrow {
+  width: 170px;
+  height: 130px;
+  background: url('../img/score.png') no-repeat -180px 0;
+  margin: 5px;
+  image-rendering: pixelated;
+  background-size: 1790px 410px;
+}
+
+.hand-total, .dealerScore{
+  width: 170px;
+  height: 130px;
+  background: url('../img/score.png') no-repeat;
+  margin: 5px;
+  display: inline-block;
+  image-rendering: pixelated;
+  background-size: 1790px 410px;
+}
+
+.card-back {
+  width: 110px;
+  height: 90px;
+  background: url('../img/cards.png') no-repeat -1560px 0;
+  margin: 5px;
+  display: inline-block;
+  image-rendering: pixelated;
+  background-size: 1670px 390px;
+}
+
+.playingCard {
+  width: 110px;
+  height: 90px;
+  background: url('../img/cards.png') no-repeat;
+  margin: 5px;
+  display: inline-block; 
+  image-rendering: pixelated;
+  background-size: 1670px 390px;
+}
+
 
 /* Generated by Font Squirrel (https://www.fontsquirrel.com) on June 2, 2016 */
 

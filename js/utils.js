@@ -20,6 +20,7 @@ export async function updateTotal(person, cardValue) {
     person.aceIs11 -= 1;
   }
 }
+
 // Generic function to calculate background position
 function getBackgroundPosition(code, positions, width, height, gap, columns, scale) {
   let position = positions[code];
@@ -46,7 +47,7 @@ export function getUiBackgroundPosition(uiCode) {
 }
 
 export function getScoreBackgroundPosition(scoreCode) {
-  return getBackgroundPosition(scoreCode, SCORE_SPRITE_POSITIONS, SCORE_SPRITE_WIDTH, SCORE_SPRITE_HEIGHT, SCORE_SPRITE_GAP, SCORE_SPRITE_COLUMNS, SCORE_CARD_SCALE);
+  return getBackgroundPosition(scoreCode.toString(), SCORE_SPRITE_POSITIONS, SCORE_SPRITE_WIDTH, SCORE_SPRITE_HEIGHT, SCORE_SPRITE_GAP, SCORE_SPRITE_COLUMNS, SCORE_CARD_SCALE);
 }
 
 export function getButtonBackgroundPosition(buttonCode) {

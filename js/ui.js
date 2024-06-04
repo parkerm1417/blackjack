@@ -1,25 +1,47 @@
 import {
-  player, dealer, splitHands, totalHandBet, playerMoney, playerBet, gameState,
+  player, dealer, splitHands, totalHandBet, playerMoney, playerBet, gameState, currentHandIndex,
   STATE_DEALERTURN, STATE_REWARD, BET_AMOUNTS,
   setDealerHasPlayed
 } from './globals.js';
 
-import { getCardBackgroundPosition } from './utils.js';
+import { getCardBackgroundPosition, getButtonBackgroundPosition, getScoreBackgroundPosition } from './utils.js';
 
 // Display the starting hands of the player and dealer
 export function displayStartingHands() {
   $('#dealerHand').empty();
   $('#playerHand').empty();
+  $('#playerHand').append('<div id="hand1" class="no-arrow"></div>');
+  $('#dealerHand').append('<div class="no-arrow"></div>');
 
+  ///////////////////////////////////
+  // SET UP AREA FOR DEALER'S HAND //
+  ///////////////////////////////////
+
+  // area for dealer's total hand value
+  let dealerScorePosition = getScoreBackgroundPosition(`questionMark`);
+  let $dealerScore = $('<div class="dealerScore"></div>').css('background-position', dealerScorePosition);
+  $('#dealerHand').append($dealerScore);
+
+  // area for dealer's hand
+  let dealerBackgroundPosition = getCardBackgroundPosition(dealer.hand[0]);
+  $('#dealerHand').append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
+  $('#dealerHand').append('<div class="card-back"></div>');
+
+  ///////////////////////////////////
+  // SET UP AREA FOR PLAYER'S HAND //
+  ///////////////////////////////////
+
+  // area for player's hand value
+  let playerScorePosition = getScoreBackgroundPosition(`questionMark`); // start with ? then update
+  let $playerScore = $('<div class="hand-total"></div>').css('background-position', playerScorePosition);
+  $('#playerHand').append($playerScore);
+
+  // area for player's hand
   player.hand.forEach(card => {
     let backgroundPosition = getCardBackgroundPosition(card);
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
     $('#playerHand').append($card);
   });
-
-  let dealerBackgroundPosition = getCardBackgroundPosition(dealer.hand[0]);
-  $('#dealerHand').append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
-  $('#dealerHand').append('<div class="card-back"></div>');
 }
 
 // Display all dealer's cards
@@ -75,7 +97,7 @@ export async function displaySplitHands() {
 export function updateBetDisplay() {
   $('#playerMoney').text(`Player Money: $${playerMoney}`);
   $('#currentBet').text(`Current Bet: $${BET_AMOUNTS[playerBet]}`);
-  $('#bet_amount').css('background', 'url(../img/buttons.png) no-repeat -496px ' + (playerBet - 1)*-108 + 'px / 736px 961px');
+  $('#bet_amount').css('background-position', getButtonBackgroundPosition(`bet${playerBet}`));
   if (totalHandBet > 0) {
     $('#totalHandBet').text(`Total Hand Bet: $${totalHandBet}`);
   } else {
@@ -86,11 +108,17 @@ export function updateBetDisplay() {
 export async function updateScores(dealerOnly = false) {
   if (!dealerOnly) {
     if (splitHands.length > 0) {
+      splitHands.forEach((hand) => {
+        $(`#hand${index + 1}`).next(`.hand-total`).css('background-position', getScoreBackgroundPosition(hand.total));
+      });
       let playerScores = splitHands.map((hand, index) => `HAND ${index + 1}: ${hand.total}`).join("<br>");
       $('#playerTotal').html(playerScores);
     } else {
+      $(`#hand1`).next(`.hand-total`).css('background-position', getScoreBackgroundPosition(player.total));
       $('#playerTotal').text(`Player Total: ${player.total}`);
     }
   }
-  $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '??'}`);
+
+  $('.dealerScore').css('background-position', getScoreBackgroundPosition(`${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : 'questionMark'}`));
+  $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '?'}`);
 }
