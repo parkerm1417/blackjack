@@ -196,11 +196,11 @@ export async function splitHand(doubleAce) {
   // Clear and set up the current hand div
   $(`#hand${currentHandIndex + 1}`).empty();
   $(`#hand${currentHandIndex + 1}`).append(`<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div></div>`);
-  $(`#hand${currentHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': '2px solid red' });
+  $(`#hand${currentHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px'});
 
   // Add a new hand div
   $('#playerHand').append(`<div id="hand${player.hands.length + 1}" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>`);
-  $(`#hand${player.hands.length + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': 'none' });
+  $(`#hand${player.hands.length + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px'});
 
   // Split the current hand
   let splitHandIndex = currentHandIndex; //store the current hand index
