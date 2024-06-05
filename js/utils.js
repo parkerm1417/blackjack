@@ -37,7 +37,7 @@ export async function updateTotal(person, cardValue) {
 }
 
 // Generic function to calculate background position
-function getBackgroundPosition(code, positions, width, height, gap, columns, scale) {
+async function getBackgroundPosition(code, positions, width, height, gap, columns, scale) {
   let position = positions[code];
   let row = Math.floor(position / columns);
   let col = position % columns;
@@ -47,11 +47,11 @@ function getBackgroundPosition(code, positions, width, height, gap, columns, sca
 }
 
 // Specific functions for each sprite sheet
-export function getCardBackgroundPosition(cardCode) {
-  return getBackgroundPosition(cardCode, CARD_POSITIONS, CARD_WIDTH, CARD_HEIGHT, CARD_GAP, SPRITE_COLUMNS, cardScale);
+export async function getCardBackgroundPosition(cardCode) {
+  return await getBackgroundPosition(cardCode, CARD_POSITIONS, CARD_WIDTH, CARD_HEIGHT, CARD_GAP, SPRITE_COLUMNS, cardScale);
 }
 
-export function getUiBackgroundPosition(uiCode) {
+export async function getUiBackgroundPosition(uiCode) {
   let position = UI_SPRITE_POSITIONS[uiCode];
   let y = 0;
   for (let i = 0; i < position; i++) {
@@ -61,10 +61,10 @@ export function getUiBackgroundPosition(uiCode) {
   return `-${x}px -${y}px`;
 }
 
-export function getScoreBackgroundPosition(scoreCode) {
-  return getBackgroundPosition(scoreCode.toString(), SCORE_SPRITE_POSITIONS, SCORE_SPRITE_WIDTH, SCORE_SPRITE_HEIGHT, SCORE_SPRITE_GAP, SCORE_SPRITE_COLUMNS, SCORE_CARD_SCALE);
+export async function getScoreBackgroundPosition(scoreCode) {
+  return await getBackgroundPosition(scoreCode.toString(), SCORE_SPRITE_POSITIONS, SCORE_SPRITE_WIDTH, SCORE_SPRITE_HEIGHT, SCORE_SPRITE_GAP, SCORE_SPRITE_COLUMNS, SCORE_CARD_SCALE);
 }
 
-export function getButtonBackgroundPosition(buttonCode) {
-  return getBackgroundPosition(buttonCode, BUTTON_SPRITE_POSITIONS, BUTTON_SPRITE_WIDTH, BUTTON_SPRITE_HEIGHT, BUTTON_SPRITE_GAP, BUTTON_SPRITE_COLUMNS, BUTTON_CARD_SCALE);
+export async function getButtonBackgroundPosition(buttonCode) {
+  return await getBackgroundPosition(buttonCode, BUTTON_SPRITE_POSITIONS, BUTTON_SPRITE_WIDTH, BUTTON_SPRITE_HEIGHT, BUTTON_SPRITE_GAP, BUTTON_SPRITE_COLUMNS, BUTTON_CARD_SCALE);
 }

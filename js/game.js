@@ -10,7 +10,7 @@ import { displayStartingHands, displayDealerCards, displayNewDealerCard, display
 import { getButtonBackgroundPosition } from './utils.js';
 
 // Setup div structure and sprites
-export function startGame() {
+export async function startGame() {
   getDeck(); // INITIALIZE DECK
 
   // SETUP UIWINDOW CONTENTS
@@ -46,36 +46,36 @@ export function startGame() {
   $('#playerHand').append('<div id="hand1" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
 
   // SET UP BUTTON SPRITE POSITIONS
-  $('#bet_amount').css('background-position', getButtonBackgroundPosition(`bet${playerBet}`));
-  $('#hit').css('background-position', getButtonBackgroundPosition(`hit`));
-  $('#stand').css('background-position', getButtonBackgroundPosition(`stand`));
-  $('#split').css('background-position', getButtonBackgroundPosition(`splitInactive`));
-  $('#double').css('background-position', getButtonBackgroundPosition(`doubleInactive`));
-  $('#ins-yes').css('background-position', getButtonBackgroundPosition(`yes`));
-  $('#ins-no').css('background-position', getButtonBackgroundPosition(`no`));
+  $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet${playerBet}`));
+  $('#hit').css('background-position', await getButtonBackgroundPosition(`hit`));
+  $('#stand').css('background-position', await getButtonBackgroundPosition(`stand`));
+  $('#split').css('background-position', await getButtonBackgroundPosition(`splitInactive`));
+  $('#double').css('background-position', await getButtonBackgroundPosition(`doubleInactive`));
+  $('#ins-yes').css('background-position', await getButtonBackgroundPosition(`yes`));
+  $('#ins-no').css('background-position', await getButtonBackgroundPosition(`no`));
 
   /////////////////////////
   // SETUP BUTTON EVENTS //
   /////////////////////////
 
   // BET INCREASE BUTTON
-  $('#bet_increase').on('click', function () {
-    if (playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7) { setPlayerBet(playerBet + 1); }
-    else { setPlayerBet(1); }
+  $('#bet_increase').on('click', async function () {
+    if (playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7) { await setPlayerBet(playerBet + 1); }
+    else { await setPlayerBet(1); }
   });
   $('#bet_increase').hover(
-    function () { $('#bet_increase').css('background-position', getButtonBackgroundPosition(`betIncreaseHover`)); },
-    function () { $('#bet_increase').css('background-position', getButtonBackgroundPosition(`betIncrease`)); }
+    async function () { $('#bet_increase').css('background-position', await getButtonBackgroundPosition(`betIncreaseHover`)); },
+    async function () { $('#bet_increase').css('background-position', await getButtonBackgroundPosition(`betIncrease`)); }
   )
 
   // BET DECREASE BUTTON
-  $('#bet_decrease').on('click', function () {
-    if (playerBet > 1) { setPlayerBet(playerBet - 1); }
-    else { setPlayerBet(7); }
+  $('#bet_decrease').on('click', async function () {
+    if (playerBet > 1) { await setPlayerBet(playerBet - 1); }
+    else { await setPlayerBet(7); }
   });
   $('#bet_decrease').hover(
-    function () { $('#bet_decrease').css('background-position', getButtonBackgroundPosition(`betDecreaseHover`)); },
-    function () { $('#bet_decrease').css('background-position', getButtonBackgroundPosition(`betDecrease`)); }
+    async function () { $('#bet_decrease').css('background-position', await getButtonBackgroundPosition(`betDecreaseHover`)); },
+    async function () { $('#bet_decrease').css('background-position', await getButtonBackgroundPosition(`betDecrease`)); }
   )
 
   // DEAL BUTTON
@@ -88,8 +88,8 @@ export function startGame() {
     } else { $("#handResult").append("Place a bet to start the game."); }
   });
   $('#deal').hover(
-    function () { $('#deal').css('background-position', getButtonBackgroundPosition(`dealHover`)); },
-    function () { $('#deal').css('background-position', getButtonBackgroundPosition(`deal`)); }
+    async function () { $('#deal').css('background-position', await getButtonBackgroundPosition(`dealHover`)); },
+    async function () { $('#deal').css('background-position', await getButtonBackgroundPosition(`deal`)); }
   )
 
   // HIT BUTTON
@@ -105,8 +105,8 @@ export function startGame() {
     }
   });
   $('#hit').hover(
-    function () { $('#hit').css('background-position', getButtonBackgroundPosition(`hitHover`)); },
-    function () { $('#hit').css('background-position', getButtonBackgroundPosition(`hit`)); }
+    async function () { $('#hit').css('background-position', await getButtonBackgroundPosition(`hitHover`)); },
+    async function () { $('#hit').css('background-position', await getButtonBackgroundPosition(`hit`)); }
   )
 
   // STAND BUTTON
@@ -119,8 +119,8 @@ export function startGame() {
     } else { setGameState(STATE_DEALERTURN); }
   });
   $('#stand').hover(
-    function () { $('#stand').css('background-position', getButtonBackgroundPosition(`standHover`)); },
-    function () { $('#stand').css('background-position', getButtonBackgroundPosition(`stand`)); }
+    async function () { $('#stand').css('background-position', await getButtonBackgroundPosition(`standHover`)); },
+    async function () { $('#stand').css('background-position', await getButtonBackgroundPosition(`stand`)); }
   )
 
   // DOUBLE BUTTON
@@ -138,11 +138,11 @@ export function startGame() {
     } else { $("#handResult").append("Not enough money to double down."); }
   });
   $('#double').hover(
-    function () {
-      if ($('#double').hasClass('active')) { $('#double').css('background-position', getButtonBackgroundPosition(`doubleHover`)); }
+    async function () {
+      if ($('#double').hasClass('active')) { $('#double').css('background-position', await getButtonBackgroundPosition(`doubleHover`)); }
     },
-    function () {
-      if ($('#double').hasClass('active')) { $('#double').css('background-position', getButtonBackgroundPosition(`double`)); }
+    async function () {
+      if ($('#double').hasClass('active')) { $('#double').css('background-position', await getButtonBackgroundPosition(`double`)); }
     }
   )
 
@@ -158,11 +158,11 @@ export function startGame() {
     } else { $("#handResult").append("Cannot split this hand."); }
   });
   $('#split').hover(
-    function () {
-      if ($('#split').hasClass('active')) { $('#split').css('background-position', getButtonBackgroundPosition(`splitHover`)); }
+    async function () {
+      if ($('#split').hasClass('active')) { $('#split').css('background-position', await getButtonBackgroundPosition(`splitHover`)); }
     },
-    function () {
-      if ($('#split').hasClass('active')) { $('#split').css('background-position', getButtonBackgroundPosition(`split`)); }
+    async function () {
+      if ($('#split').hasClass('active')) { $('#split').css('background-position', await getButtonBackgroundPosition(`split`)); }
     }
   )
 
@@ -184,21 +184,21 @@ export function startGame() {
     } else { $("#handResult").html("Not enough money for insurance."); }
   });
   $('#ins-yes').hover(
-    function () { $('#ins-yes').css('background-position', getButtonBackgroundPosition(`yesHover`)); },
-    function () { $('#ins-yes').css('background-position', getButtonBackgroundPosition(`yes`)); }
+    async function () { $('#ins-yes').css('background-position', await getButtonBackgroundPosition(`yesHover`)); },
+    async function () { $('#ins-yes').css('background-position', await getButtonBackgroundPosition(`yes`)); }
   )
 
   // INSURANCE NO BUTTON
   $('#ins-no').on('click', async function () {
     if (dealer.total === 21) {
-      $('.card-back').remove();
+      await displayDealerCards();
       $("#handResult").append("DEALER HAD BLACKJACK!");
       setGameState(STATE_BETTING);
     } else { setGameState(STATE_PLAYERTURN); }
   });
   $('#ins-no').hover(
-    function () { $('#ins-no').css('background-position', getButtonBackgroundPosition(`noHover`)); },
-    function () { $('#ins-no').css('background-position', getButtonBackgroundPosition(`no`)); }
+    async function () { $('#ins-no').css('background-position', await getButtonBackgroundPosition(`noHover`)); },
+    async function () { $('#ins-no').css('background-position', await getButtonBackgroundPosition(`no`)); }
   )
 
   setGameState(STATE_BETTING);
@@ -260,7 +260,7 @@ async function logicNewHand() {
 }
 
 // Handle player's turn
-function logicPlayerTurn() {
+async function logicPlayerTurn() {
   let splitActive = false;
   let doubleActive = false;
   $('#double').removeClass('active');
@@ -287,8 +287,8 @@ function logicPlayerTurn() {
 
   if (splitActive || doubleActive) {
     setGameWindow('splitDouble');
-    splitActive ? $('#split').css('background-position', getButtonBackgroundPosition(`split`)) : $('#split').css('background-position', getButtonBackgroundPosition(`splitInactive`));
-    doubleActive ? $('#double').css('background-position', getButtonBackgroundPosition(`double`)) : $('#double').css('background-position', getButtonBackgroundPosition(`doubleInactive`));
+    splitActive ? $('#split').css('background-position', await getButtonBackgroundPosition(`split`)) : $('#split').css('background-position', await getButtonBackgroundPosition(`splitInactive`));
+    doubleActive ? $('#double').css('background-position', await getButtonBackgroundPosition(`double`)) : $('#double').css('background-position', await getButtonBackgroundPosition(`doubleInactive`));
   } else {
     setGameWindow('hit');
   }
@@ -333,7 +333,7 @@ export async function logicReward() {
 
   $("#handResult").html(playerResults.join("<br>"));
   setDealerHasPlayed(false);
-  if (playerMoney < BET_AMOUNTS[playerBet]) { setPlayerBet(playerMoney); }
+  if (playerMoney < BET_AMOUNTS[playerBet]) { await setPlayerBet(playerMoney); }
   setTotalHandBet(0);
   setGameState(STATE_BETTING);
 }

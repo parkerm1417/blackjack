@@ -1,6 +1,7 @@
 import { getUiBackgroundPosition, getButtonBackgroundPosition, getCardBackgroundPosition} from './utils.js';
 import { logic } from './game.js';
 import { drawCard } from './api.js';
+import { updateScores } from './ui.js';
 
 // Game states
 export const STATE_NEWHAND = 0;
@@ -96,11 +97,11 @@ export function setGameState(value) {
   logic();
 }
 
-export function setGameWindow(value) {
+export async function setGameWindow(value) {
   switch (value) {
     case 'bet':
       if (gameWindow != value || gameWindow != 'splitDouble') {
-        $('#uiWindow').css('background-position', getUiBackgroundPosition('fourButton'));
+        $('#uiWindow').css('background-position', await getUiBackgroundPosition('fourButton'));
         $('#uiWindow').css('height', '380px');
         $('#uiWindow').css('align-content', 'center');
       }
@@ -111,7 +112,7 @@ export function setGameWindow(value) {
 
     case 'hit':
       if (gameWindow != value) {
-        $('#uiWindow').css('background-position', getUiBackgroundPosition('twoButton'));
+        $('#uiWindow').css('background-position', await getUiBackgroundPosition('twoButton'));
         $('#uiWindow').css('height', '230px');
         $('#uiWindow').css('align-content', 'center');
       }
@@ -123,7 +124,7 @@ export function setGameWindow(value) {
 
     case 'splitDouble':
       if (gameWindow != value || gameWindow != 'bet') {
-        $('#uiWindow').css('background-position', getUiBackgroundPosition('fourButton'));
+        $('#uiWindow').css('background-position', await getUiBackgroundPosition('fourButton'));
         $('#uiWindow').css('height', '380px');
         $('#uiWindow').css('align-content', 'center');
       }
@@ -135,7 +136,7 @@ export function setGameWindow(value) {
 
     case 'insurance':
       if (gameWindow != value) {
-        $('#uiWindow').css('background-position', getUiBackgroundPosition('insurance'));
+        $('#uiWindow').css('background-position', await getUiBackgroundPosition('insurance'));
         $('#uiWindow').css('height', '370px');
         $('#uiWindow').css('align-content', 'end');
       }
@@ -151,11 +152,11 @@ export function setDeckId(value) { deckId = value; }
 export function setDealerHasPlayed(value) { dealerHasPlayed = value; }
 export function setCardsLeft(value) { cardsLeft = value; }
 
-export function setPlayerBet(value) {
+export async function setPlayerBet(value) {
   if (gameState == STATE_BETTING) {
     playerBet = value;
     $('#currentBet').text(`Current Bet: $${BET_AMOUNTS[playerBet]}`);
-    $('#bet_amount').css('background-position', getButtonBackgroundPosition(`bet${playerBet}`));
+    $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet${playerBet}`));
   }
 }
 
@@ -187,33 +188,41 @@ export function newHand() {
 }
 
 export async function splitHand() {
+  // Clear and set up the current hand div
   $(`#hand${currentHandIndex + 1}`).empty();
   $(`#hand${currentHandIndex + 1}`).append(`<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div></div>`);
   $(`#hand${currentHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': '2px solid red' });
 
-
+  // Add a new hand div
   $('#playerHand').append(`<div id="hand${currentHandIndex + 2}" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>`);
   $(`#hand${currentHandIndex + 2}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': 'none' });
-  
+
+  // Split the current hand
   let tempHand = player.hands[currentHandIndex];
   player.hands[currentHandIndex] = { hand: [tempHand.hand[0]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 };
   await drawCard(player);
-  player.hands[currentHandIndex].hand.forEach(card => {
-    let backgroundPosition = getCardBackgroundPosition(card);
-    let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
-    $(`#hand${currentHandIndex + 1}`).append($card);
-  });
 
-  
-  currentHandIndex++;
-  player.hands.push({ hand: [tempHand.hand[0]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 });
-  await drawCard(player);
-  player.hands[currentHandIndex].hand.forEach(card => {
-    let backgroundPosition = getCardBackgroundPosition(card);
+  // Update the current hand display
+  for (const card of player.hands[currentHandIndex].hand) {
+    let backgroundPosition = await getCardBackgroundPosition(card);
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
     $(`#hand${currentHandIndex + 1}`).append($card);
-  });
+  }
+
+  // Move to the next hand index and update
+  currentHandIndex++;
+  player.hands.push({ hand: [tempHand.hand[1]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 });
+  await drawCard(player);
+
+  // Update the new hand display
+  for (const card of player.hands[currentHandIndex].hand) {
+    let backgroundPosition = await getCardBackgroundPosition(card);
+    let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
+    $(`#hand${currentHandIndex + 1}`).append($card);
+  }
   
+  await updateScores();
+  // Reset the hand index
   currentHandIndex--;
   tempHand = [];
 }
