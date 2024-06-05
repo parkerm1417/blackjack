@@ -25,7 +25,7 @@ export function startGame() {
     <div id="hit-stand-window" class="hidden">
       <div id="hit"></div>
       <div id="stand"></div>
-      <div id="split-double" class="hidden">
+      <div id="splitDouble" class="hidden">
         <div id="split"></div>
         <div id="double"></div>
       </div>
@@ -173,7 +173,7 @@ export function startGame() {
       setInsuranceBet(BET_AMOUNTS[playerBet] / 2);
       setTotalHandBet(totalHandBet + insuranceBet);
       if (dealer.total === 21) {
-        $('.card-back').remove();
+        await displayDealerCards();
         $("#handResult").html("DEALER HAD BLACKJACK!");
         setPlayerMoney(playerMoney + insuranceBet * 2);
         setGameState(STATE_BETTING); // Hand over, return to betting state
@@ -243,14 +243,15 @@ async function logicNewHand() {
   await drawCard(player);
   await drawCardDealer(dealer);
 
-  displayStartingHands();
+  await displayStartingHands();
 
   if (player.hands[currentHandIndex].total === 21 || (dealerHasPlayed && dealer.total === 21)) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000))
     if (!dealerHasPlayed) {
-      await displayDealerCards();
+      setGameState(STATE_DEALERTURN);
+    } else {
+      setGameState(STATE_REWARD);
     }
-    setGameState(STATE_REWARD);
   } else if (dealer.hand[1].charAt(0) === 'A') {
     setGameState(STATE_INSURANCE);
   } else {
@@ -291,17 +292,14 @@ function logicPlayerTurn() {
   } else {
     setGameWindow('hit');
   }
-
-  $('bet-window').addClass('hidden');
-  $('hit-stand-window').removeClass('hidden');
 }
 
 // Handle dealer's turn
 async function logicDealerTurn() {
   await displayDealerCards();
   while (dealer.total < 17) {
-    await drawCardDealer(dealer);
-    await displayNewDealerCard();
+    await drawCardDealer(dealer, true);
+    if (dealer.total < 17) { await new Promise(resolve => setTimeout(resolve, 420)) }
   }
   setGameState(STATE_REWARD);
 }

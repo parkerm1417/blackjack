@@ -117,7 +117,7 @@ export function setGameWindow(value) {
       }
       $('#hit-stand-window').removeClass('hidden'); //show hit buttons
       $('#bet-window').addClass('hidden');          //hide bet buttons
-      $('#split-double').addClass('hidden');        //hide split & double buttons
+      $('#splitDouble').addClass('hidden');        //hide split & double buttons
       $('#insurance').addClass('hidden');           //hide insurance buttons
       break;
 
@@ -128,7 +128,7 @@ export function setGameWindow(value) {
         $('#uiWindow').css('align-content', 'center');
       }
       $('#hit-stand-window').removeClass('hidden'); //show hit buttons
-      $('#split-double').removeClass('hidden');     //show split & double buttons
+      $('#splitDouble').removeClass('hidden');     //show split & double buttons
       $('#bet-window').addClass('hidden');          //hide bet buttons
       $('#insurance').addClass('hidden');           //hide insurance buttons
       break;
@@ -187,13 +187,13 @@ export function newHand() {
 }
 
 export function splitHand() {
-  $(`hand${currentHandIndex}`).empty();
-  $(`hand${currentHandIndex}`).append(`<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div></div>`);
-  $(`hand${currentHandIndex}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': '2px solid red' });
+  $(`#hand${currentHandIndex + 1}`).empty();
+  $(`#hand${currentHandIndex + 1}`).append(`<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div></div>`);
+  $(`#hand${currentHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': '2px solid red' });
 
 
-  $('#playerHand').append(`<div id="hand${currentHandIndex + 1}" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>`);
-  $(`hand${currentHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': 'none' });
+  $('#playerHand').append(`<div id="hand${currentHandIndex + 2}" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>`);
+  $(`#hand${currentHandIndex + 2}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': 'none' });
   
   let tempHand = player.hands[currentHandIndex];
   player.hands[currentHandIndex] = { hand: [tempHand.hand[0]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 };
@@ -201,7 +201,7 @@ export function splitHand() {
   player.hands[currentHandIndex].hand.forEach(card => {
     let backgroundPosition = getCardBackgroundPosition(card);
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
-    $(`hand${currentHandIndex}`).append($card);
+    $(`#hand${currentHandIndex}`).append($card);
   });
 
   

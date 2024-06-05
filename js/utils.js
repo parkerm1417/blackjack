@@ -6,8 +6,6 @@ import { CARD_POSITIONS, CARD_WIDTH, CARD_HEIGHT, CARD_GAP, SPRITE_COLUMNS, card
   dealerHasPlayed
 } from './globals.js';
 
-import { updateScores } from './ui.js';
-
 export async function updateTotal(person, cardValue) {
   if (person == player) {
     if (['KING', 'QUEEN', 'JACK'].includes(cardValue)) {

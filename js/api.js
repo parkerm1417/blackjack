@@ -1,6 +1,6 @@
 import { deckId, setDeckId, deck_count, setCardsLeft, currentHandIndex} from './globals.js';
 import { updateTotal } from './utils.js';
-import { displayNewPlayerCard } from './ui.js';
+import { displayNewPlayerCard, displayNewDealerCard } from './ui.js';
 
 export async function getDeck() {
   try {
@@ -23,13 +23,16 @@ export async function shuffle() {
   }
 }
 
-export async function drawCardDealer(dealer) {
+export async function drawCardDealer(dealer, displayCard = false) {
   try {
     const data = await $.getJSON(`http://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`);
     const card = data.cards[0];
     dealer.hand.push(card.code);
     updateTotal(dealer, card.value);
     setCardsLeft(data.remaining);
+    if(displayCard){
+      await displayNewDealerCard();
+    }
   } catch (error) {
     console.error("Error drawing card:", error);
   }

@@ -21,7 +21,7 @@ body {
   background-size: 720px 1000px;
 }
 
-#bet-window, #hit-stand-window, #split-double, #insurance{
+#bet-window, #hit-stand-window, #splitDouble, #insurance{
   width: 100%;
   display: contents;
 }
