@@ -186,7 +186,7 @@ export function newHand() {
   currentHandIndex = 0;
 }
 
-export function splitHand() {
+export async function splitHand() {
   $(`#hand${currentHandIndex + 1}`).empty();
   $(`#hand${currentHandIndex + 1}`).append(`<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div></div>`);
   $(`#hand${currentHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': '2px solid red' });
@@ -197,21 +197,21 @@ export function splitHand() {
   
   let tempHand = player.hands[currentHandIndex];
   player.hands[currentHandIndex] = { hand: [tempHand.hand[0]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 };
-  drawCard(player);
+  await drawCard(player);
   player.hands[currentHandIndex].hand.forEach(card => {
     let backgroundPosition = getCardBackgroundPosition(card);
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
-    $(`#hand${currentHandIndex}`).append($card);
+    $(`#hand${currentHandIndex + 1}`).append($card);
   });
 
   
   currentHandIndex++;
   player.hands.push({ hand: [tempHand.hand[0]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 });
-  drawCard(player, true);
+  await drawCard(player);
   player.hands[currentHandIndex].hand.forEach(card => {
     let backgroundPosition = getCardBackgroundPosition(card);
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
-    $(`hand${currentHandIndex}`).append($card);
+    $(`#hand${currentHandIndex + 1}`).append($card);
   });
   
   currentHandIndex--;
