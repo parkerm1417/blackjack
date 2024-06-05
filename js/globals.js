@@ -118,7 +118,7 @@ export async function setGameWindow(value) {
       }
       $('#hit-stand-window').removeClass('hidden'); //show hit buttons
       $('#bet-window').addClass('hidden');          //hide bet buttons
-      $('#splitDouble').addClass('hidden');        //hide split & double buttons
+      $('#splitDouble').addClass('hidden');         //hide split & double buttons
       $('#insurance').addClass('hidden');           //hide insurance buttons
       break;
 
@@ -194,10 +194,11 @@ export async function splitHand() {
   $(`#hand${currentHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': '2px solid red' });
 
   // Add a new hand div
-  $('#playerHand').append(`<div id="hand${currentHandIndex + 2}" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>`);
-  $(`#hand${currentHandIndex + 2}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': 'none' });
+  $('#playerHand').append(`<div id="hand${player.hands.length + 1}" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>`);
+  $(`#hand${player.hands.length + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px', 'border': 'none' });
 
   // Split the current hand
+  let splitHandIndex = currentHandIndex; //store the current hand index
   let tempHand = player.hands[currentHandIndex];
   player.hands[currentHandIndex] = { hand: [tempHand.hand[0]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 };
   await drawCard(player);
@@ -209,9 +210,9 @@ export async function splitHand() {
     $(`#hand${currentHandIndex + 1}`).append($card);
   }
 
-  // Move to the next hand index and update
-  currentHandIndex++;
+  // Add new hand to player.hands and set currentHandIndex to that hand (will be added to end, so use length)
   player.hands.push({ hand: [tempHand.hand[1]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 });
+  currentHandIndex = player.hands.length;
   await drawCard(player);
 
   // Update the new hand display
@@ -222,7 +223,6 @@ export async function splitHand() {
   }
   
   await updateScores();
-  // Reset the hand index
-  currentHandIndex--;
-  tempHand = [];
+  currentHandIndex = splitHandIndex; // Reset the hand index
+  tempHand = []; //clear temp variable
 }
