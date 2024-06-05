@@ -149,10 +149,11 @@ export async function startGame() {
   // SPLIT BUTTON
   $('#split').on('click', async function () {
     if (player.hands[currentHandIndex].hand.length === 2 && player.hands[currentHandIndex].hand[0].charAt(0) === player.hands[currentHandIndex].hand[1].charAt(0) && playerMoney >= BET_AMOUNTS[playerBet]) {
+      let doubleAce = player.hands[currentHandIndex].hand[0].charAt(0) === "A" ? true : false;
       $('#double').removeClass('active');
       setTotalHandBet(totalHandBet + BET_AMOUNTS[playerBet]); // Increase total hand bet
       setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet]);
-      splitHand();
+      splitHand(doubleAce);
       updateScores();
       displaySplitHands();
     } else { $("#handResult").append("Cannot split this hand."); }

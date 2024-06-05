@@ -192,7 +192,7 @@ export function newHand() {
   currentHandIndex = 0;
 }
 
-export async function splitHand() {
+export async function splitHand(doubleAce) {
   // Clear and set up the current hand div
   $(`#hand${currentHandIndex + 1}`).empty();
   $(`#hand${currentHandIndex + 1}`).append(`<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div></div>`);
@@ -205,7 +205,9 @@ export async function splitHand() {
   // Split the current hand
   let splitHandIndex = currentHandIndex; //store the current hand index
   let tempHand = player.hands[currentHandIndex];
-  player.hands[currentHandIndex] = { hand: [tempHand.hand[0]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 };
+  let halfTotal = doubleAce ? 11 : tempHand.total / 2;
+
+  player.hands[currentHandIndex] = { hand: [tempHand.hand[0]], total: halfTotal, aceIs11: tempHand.aceIs11/2 };
   await drawCard(player);
 
   // Update the current hand display
@@ -216,7 +218,7 @@ export async function splitHand() {
   }
 
   // Add new hand to player.hands and set currentHandIndex to that hand (will be added to end, so use length)
-  player.hands.push({ hand: [tempHand.hand[1]], total: tempHand.total / 2, aceIs11: tempHand.aceIs11 });
+  player.hands.push({ hand: [tempHand.hand[1]], total: halfTotal, aceIs11: tempHand.aceIs11/2 });
   currentHandIndex = player.hands.length - 1;
   await drawCard(player);
 
