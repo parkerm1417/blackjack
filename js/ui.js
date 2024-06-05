@@ -94,7 +94,6 @@ export async function displaySplitHands() {
 
 export async function updateScores(dealerOnly = false) {
   if (!dealerOnly) {
-    console.log("1");
     for (const [index, hand] of player.hands.entries()) {
       let backgroundPosition = await getScoreBackgroundPosition(hand.total);
       $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
@@ -103,7 +102,6 @@ export async function updateScores(dealerOnly = false) {
     $('#playerTotal').html(playerScores);
   }
   if (dealerHasPlayed) {
-    console.log("2");
     $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${gameState === STATE_DEALERTURN || gameState === STATE_REWARD || dealer.total === 21 ? dealer.total : 'questionMark'}`));
     $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '?'}`);
   }

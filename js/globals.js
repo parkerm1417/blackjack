@@ -30,7 +30,6 @@ export let totalHandBet = 0; // Total bet across all hands
 export let playerMoney = 1000; // Player's total money
 export let insuranceBet = 0; // Insurance bet
 export let currentHandIndex = 0; // Index of the current hand being played
-export let processing = false;              // Variable used to track when button inputs need disabled
 export let player = { hands: [{ hand: [], total: 0, aceIs11: 0 }] }; // Player object to hold hands and totals
 export let dealer = { hand: [], total: 0, aceIs11: 0 }; // Dealer object to hold hands and totals
 
