@@ -49,9 +49,9 @@ export async function displayStartingHands() {
 
 // Display all dealer's cards
 export async function displayDealerCards() {
+  setDealerHasPlayed(true);
   let backgroundPosition = getCardBackgroundPosition(dealer.hand[0]);
   $('.card-back').first().replaceWith(`<div class="playingCard" style="background-position: ${backgroundPosition};"></div>`);
-  setDealerHasPlayed(true);
   await updateScores();
   await new Promise(resolve => setTimeout(resolve, 250));
 }
@@ -73,21 +73,19 @@ export async function displayNewPlayerCard() {
 }
 
 export async function displaySplitHands() {
-  /* player.hands.forEach((hand, index) => {
+  player.hands.forEach((hand, index) => {
     const handId = `hand${index + 1}`;
+    const handDiv = $(`#${handId}`);
 
+    // Update the arrow or no-arrow class
     if (index === currentHandIndex) {
-      handDiv.append('<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>')
+      handDiv.find('.no-arrow').removeClass('no-arrow').addClass('arrow');
     } else {
-      handDiv.append('<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>')
+      handDiv.find('.arrow').removeClass('arrow').addClass('no-arrow');
     }
-    hand.hand.forEach(card => {
-      let backgroundPosition = getCardBackgroundPosition(card);
-      let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
-      handDiv.append($card);
-    });
-    $('#playerHand').append(handDiv);
-  }); */
+
+  });
+  await updateScores();
   logic();
 }
 
