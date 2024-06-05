@@ -128,10 +128,19 @@ div p {
   align-items: center;
 }
 
-#dealerHand, #playerHand {
+#dealerHand {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(calc(-170px/2)); /*transform half the width of the arrow graphic*/
+}
+
+#playerHand {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   transform: translateX(calc(-170px/2)); /*transform half the width of the arrow graphic*/
