@@ -6,7 +6,7 @@ export async function getDeck() {
   try {
     console.log('Setting up Deck...');
     const data = await $.getJSON(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=${deck_count}`);
-      setDeckId(data.deck_id);
+      await setDeckId(data.deck_id);
   } catch (error) {
     console.error("Error initializing deck:", error);
   }
