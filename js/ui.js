@@ -25,8 +25,10 @@ export async function displayStartingHands() {
 
   // area for dealer's hand
   $('#dealerHand').append('<div class="card-back"></div>');
+  //await new Promise(resolve => setTimeout(resolve, 1000))
   let dealerBackgroundPosition = await getCardBackgroundPosition(dealer.hand[1]);
   $('#dealerHand').append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
+  //await new Promise(resolve => setTimeout(resolve, 1000))
 
 
   ///////////////////////////////////
@@ -43,6 +45,7 @@ export async function displayStartingHands() {
     let backgroundPosition = await getCardBackgroundPosition(card);
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
     $(`#hand${currentHandIndex + 1}`).append($card);
+    //await new Promise(resolve => setTimeout(resolve, 1000))
   };
   await updateScores();
 }
@@ -91,6 +94,7 @@ export async function displaySplitHands() {
 
 export async function updateScores(dealerOnly = false) {
   if (!dealerOnly) {
+    console.log("1");
     for (const [index, hand] of player.hands.entries()) {
       let backgroundPosition = await getScoreBackgroundPosition(hand.total);
       $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
@@ -99,7 +103,8 @@ export async function updateScores(dealerOnly = false) {
     $('#playerTotal').html(playerScores);
   }
   if (dealerHasPlayed) {
-    $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : 'questionMark'}`));
+    console.log("2");
+    $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${gameState === STATE_DEALERTURN || gameState === STATE_REWARD || dealer.total === 21 ? dealer.total : 'questionMark'}`));
     $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '?'}`);
   }
 }
