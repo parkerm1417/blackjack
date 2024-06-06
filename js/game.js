@@ -60,21 +60,31 @@ export async function startGame() {
 
   // BET INCREASE BUTTON
   $('#bet_increase').on('click', async function () {
-    if (playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7) { await setPlayerBet(playerBet + 1); }
-    else { await setPlayerBet(1); }
+    if (!$("#uiWindow").hasClass('processing')) {
+      if (playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7) { await setPlayerBet(playerBet + 1); }
+      else { await setPlayerBet(1); }
+    }
   });
   $('#bet_increase').hover(
-    async function () { $('#bet_increase').css('background-position', await getButtonBackgroundPosition(`betIncreaseHover`)); },
+    async function () {
+      if (!$("#uiWindow").hasClass('processing')) {
+        $('#bet_increase').css('background-position', await getButtonBackgroundPosition(`betIncreaseHover`));
+      }
+    },
     async function () { $('#bet_increase').css('background-position', await getButtonBackgroundPosition(`betIncrease`)); }
   )
 
   // BET DECREASE BUTTON
   $('#bet_decrease').on('click', async function () {
-    if (playerBet > 1) { await setPlayerBet(playerBet - 1); }
-    else { await setPlayerBet(7); }
+    if (!$("#uiWindow").hasClass('processing')) {
+      if (playerBet > 1) { await setPlayerBet(playerBet - 1); }
+      else { await setPlayerBet(7); }
+    }
   });
   $('#bet_decrease').hover(
-    async function () { $('#bet_decrease').css('background-position', await getButtonBackgroundPosition(`betDecreaseHover`)); },
+    async function () {
+      if (!$("#uiWindow").hasClass('processing')) { $('#bet_decrease').css('background-position', await getButtonBackgroundPosition(`betDecreaseHover`)); }
+    },
     async function () { $('#bet_decrease').css('background-position', await getButtonBackgroundPosition(`betDecrease`)); }
   )
 
