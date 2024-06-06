@@ -150,6 +150,7 @@ export async function setGameWindow(value) {
       break;
   }
   gameWindow = value;
+  $("#uiWindow").removeClass('processing');
 }
 
 export async function setDeckId(value) { deckId = value; }

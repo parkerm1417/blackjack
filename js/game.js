@@ -80,66 +80,92 @@ export async function startGame() {
 
   // DEAL BUTTON
   $('#deal').on('click', function () {
-    $("#handResult").empty();
-    if (playerBet > 0) {
-      setTotalHandBet(BET_AMOUNTS[playerBet]);
-      setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet]);
-      setGameState(STATE_NEWHAND);
-    } else { $("#handResult").append("Place a bet to start the game."); }
+    if (!$("#uiWindow").hasClass('processing')) {
+      $("#uiWindow").addClass('processing');
+      $("#handResult").empty();
+      if (playerBet > 0) {
+        setTotalHandBet(BET_AMOUNTS[playerBet]);
+        setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet]);
+        setGameState(STATE_NEWHAND);
+      } else { $("#handResult").append("Place a bet to start the game."); }
+    }
   });
   $('#deal').hover(
-    async function () { $('#deal').css('background-position', await getButtonBackgroundPosition(`dealHover`)); },
+    async function () {
+      if (!$("#uiWindow").hasClass('processing')) {
+        $('#deal').css('background-position', await getButtonBackgroundPosition(`dealHover`));
+      }
+    },
     async function () { $('#deal').css('background-position', await getButtonBackgroundPosition(`deal`)); }
   )
 
   // HIT BUTTON
   $('#hit').on('click', async function () {
-    $('#splitDouble').addClass('hidden');
-    setGameWindow('hit');
-    await drawCard(player, true);
-    if (player.hands[currentHandIndex].total > 21) {
-      if (player.hands.length > 1 && currentHandIndex < player.hands.length - 1) {
-        setCurrentHandIndex(currentHandIndex + 1);
-        displaySplitHands();
-      } else { setGameState(STATE_REWARD); }
-    }
-  });
-  $('#hit').hover(
-    async function () { $('#hit').css('background-position', await getButtonBackgroundPosition(`hitHover`)); },
-    async function () { $('#hit').css('background-position', await getButtonBackgroundPosition(`hit`)); }
-  )
-
-  // STAND BUTTON
-  $('#stand').on('click', function () {
-    $('#splitDouble').addClass('hidden');
-    setGameWindow('hit');
-    if (player.hands.length > 1 && currentHandIndex < player.hands.length - 1) {
-      setCurrentHandIndex(currentHandIndex + 1);
-      displaySplitHands();
-    } else { setGameState(STATE_DEALERTURN); }
-  });
-  $('#stand').hover(
-    async function () { $('#stand').css('background-position', await getButtonBackgroundPosition(`standHover`)); },
-    async function () { $('#stand').css('background-position', await getButtonBackgroundPosition(`stand`)); }
-  )
-
-  // DOUBLE BUTTON
-  $('#double').on('click', async function () {
-    if (playerMoney >= BET_AMOUNTS[playerBet]) {
-      setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet]);
-      setTotalHandBet(totalHandBet + BET_AMOUNTS[playerBet]);
+    if (!$("#uiWindow").hasClass('processing')) {
+      $("#uiWindow").addClass('processing');
+      $('#splitDouble').addClass('hidden');
+      setGameWindow('hit');
       await drawCard(player, true);
       if (player.hands[currentHandIndex].total > 21) {
         if (player.hands.length > 1 && currentHandIndex < player.hands.length - 1) {
           setCurrentHandIndex(currentHandIndex + 1);
           displaySplitHands();
         } else { setGameState(STATE_REWARD); }
+      }
+    }
+  });
+  $('#hit').hover(
+    async function () {
+      if (!$("#uiWindow").hasClass('processing')) {
+        $('#hit').css('background-position', await getButtonBackgroundPosition(`hitHover`));
+      }
+    },
+    async function () { $('#hit').css('background-position', await getButtonBackgroundPosition(`hit`)); }
+  )
+
+  // STAND BUTTON
+  $('#stand').on('click', function () {
+    if (!$("#uiWindow").hasClass('processing')) {
+      $('#splitDouble').addClass('hidden');
+      setGameWindow('hit');
+      $("#uiWindow").addClass('processing');
+      if (player.hands.length > 1 && currentHandIndex < player.hands.length - 1) {
+        setCurrentHandIndex(currentHandIndex + 1);
+        displaySplitHands();
       } else { setGameState(STATE_DEALERTURN); }
-    } else { $("#handResult").append("Not enough money to double down."); }
+    }
+  });
+  $('#stand').hover(
+    async function () {
+      if (!$("#uiWindow").hasClass('processing')) {
+        $('#stand').css('background-position', await getButtonBackgroundPosition(`standHover`));
+      }
+    },
+    async function () { $('#stand').css('background-position', await getButtonBackgroundPosition(`stand`)); }
+  )
+
+  // DOUBLE BUTTON
+  $('#double').on('click', async function () {
+    if (!$("#uiWindow").hasClass('processing')) {
+      $("#uiWindow").addClass('processing');
+      if (playerMoney >= BET_AMOUNTS[playerBet]) {
+        setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet]);
+        setTotalHandBet(totalHandBet + BET_AMOUNTS[playerBet]);
+        await drawCard(player, true);
+        if (player.hands[currentHandIndex].total > 21) {
+          if (player.hands.length > 1 && currentHandIndex < player.hands.length - 1) {
+            setCurrentHandIndex(currentHandIndex + 1);
+            displaySplitHands();
+          } else { setGameState(STATE_REWARD); }
+        } else { setGameState(STATE_DEALERTURN); }
+      } else { $("#handResult").append("Not enough money to double down."); }
+    }
   });
   $('#double').hover(
     async function () {
-      if ($('#double').hasClass('active')) { $('#double').css('background-position', await getButtonBackgroundPosition(`doubleHover`)); }
+      if (!$("#uiWindow").hasClass('processing')) {
+        if ($('#double').hasClass('active')) { $('#double').css('background-position', await getButtonBackgroundPosition(`doubleHover`)); }
+      }
     },
     async function () {
       if ($('#double').hasClass('active')) { $('#double').css('background-position', await getButtonBackgroundPosition(`double`)); }
@@ -148,19 +174,26 @@ export async function startGame() {
 
   // SPLIT BUTTON
   $('#split').on('click', async function () {
-    if (player.hands[currentHandIndex].hand.length === 2 && player.hands[currentHandIndex].hand[0].charAt(0) === player.hands[currentHandIndex].hand[1].charAt(0) && playerMoney >= BET_AMOUNTS[playerBet]) {
-      let doubleAce = player.hands[currentHandIndex].hand[0].charAt(0) === "A" ? true : false;
-      $('#double').removeClass('active');
-      setTotalHandBet(totalHandBet + BET_AMOUNTS[playerBet]); // Increase total hand bet
-      setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet]);
-      splitHand(doubleAce);
-      updateScores();
-      displaySplitHands();
-    } else { $("#handResult").append("Cannot split this hand."); }
+    if (!$("#uiWindow").hasClass('processing')) {
+      $("#uiWindow").addClass('processing');
+      if (player.hands[currentHandIndex].hand.length === 2 && player.hands[currentHandIndex].hand[0].charAt(0) === player.hands[currentHandIndex].hand[1].charAt(0) && playerMoney >= BET_AMOUNTS[playerBet]) {
+        let doubleAce = player.hands[currentHandIndex].hand[0].charAt(0) === "A" ? true : false;
+        $('#double').removeClass('active');
+        setTotalHandBet(totalHandBet + BET_AMOUNTS[playerBet]); // Increase total hand bet
+        setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet]);
+        splitHand(doubleAce);
+        updateScores();
+        displaySplitHands();
+      } else { $("#handResult").append("Cannot split this hand."); }
+    }
   });
   $('#split').hover(
     async function () {
-      if ($('#split').hasClass('active')) { $('#split').css('background-position', await getButtonBackgroundPosition(`splitHover`)); }
+      if (!$("#uiWindow").hasClass('processing')) {
+        if ($('#split').hasClass('active')) {
+          $('#split').css('background-position', await getButtonBackgroundPosition(`splitHover`));
+        }
+      }
     },
     async function () {
       if ($('#split').hasClass('active')) { $('#split').css('background-position', await getButtonBackgroundPosition(`split`)); }
@@ -169,36 +202,50 @@ export async function startGame() {
 
   // INSURANCE YES BUTTON
   $('#ins-yes').on('click', async function () {
-    if (playerMoney >= BET_AMOUNTS[playerBet] / 2) {
-      setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet] / 2);
-      setInsuranceBet(BET_AMOUNTS[playerBet] / 2);
-      setTotalHandBet(totalHandBet + insuranceBet);
-      if (dealer.total === 21) {
-        await displayDealerCards();
-        $("#handResult").html("DEALER HAD BLACKJACK!");
-        setPlayerMoney(playerMoney + insuranceBet * 2);
-        setGameState(STATE_BETTING); // Hand over, return to betting state
-      } else {
-        $("#handResult").html("DEALER DOES NOT HAVE BLACKJACK.");
-        setGameState(STATE_PLAYERTURN); // Continue hand >> player's turn
-      }
-    } else { $("#handResult").html("Not enough money for insurance."); }
+    if (!$("#uiWindow").hasClass('processing')) {
+      $("#uiWindow").addClass('processing');
+      if (playerMoney >= BET_AMOUNTS[playerBet] / 2) {
+        setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet] / 2);
+        setInsuranceBet(BET_AMOUNTS[playerBet] / 2);
+        setTotalHandBet(totalHandBet + insuranceBet);
+        if (dealer.total === 21) {
+          await displayDealerCards();
+          $("#handResult").html("DEALER HAD BLACKJACK!");
+          setPlayerMoney(playerMoney + insuranceBet * 2);
+          setGameState(STATE_BETTING); // Hand over, return to betting state
+        } else {
+          $("#handResult").html("DEALER DOES NOT HAVE BLACKJACK.");
+          setGameState(STATE_PLAYERTURN); // Continue hand >> player's turn
+        }
+      } else { $("#handResult").html("Not enough money for insurance."); }
+    }
   });
   $('#ins-yes').hover(
-    async function () { $('#ins-yes').css('background-position', await getButtonBackgroundPosition(`yesHover`)); },
+    async function () {
+      if (!$("#uiWindow").hasClass('processing')) {
+        $('#ins-yes').css('background-position', await getButtonBackgroundPosition(`yesHover`));
+      }
+    },
     async function () { $('#ins-yes').css('background-position', await getButtonBackgroundPosition(`yes`)); }
   )
 
   // INSURANCE NO BUTTON
   $('#ins-no').on('click', async function () {
-    if (dealer.total === 21) {
-      await displayDealerCards();
-      $("#handResult").append("DEALER HAD BLACKJACK!");
-      setGameState(STATE_BETTING);
-    } else { setGameState(STATE_PLAYERTURN); }
+    if (!$("#uiWindow").hasClass('processing')) {
+      $("#uiWindow").addClass('processing');
+      if (dealer.total === 21) {
+        await displayDealerCards();
+        $("#handResult").append("DEALER HAD BLACKJACK!");
+        setGameState(STATE_BETTING);
+      } else { setGameState(STATE_PLAYERTURN); }
+    }
   });
   $('#ins-no').hover(
-    async function () { $('#ins-no').css('background-position', await getButtonBackgroundPosition(`noHover`)); },
+    async function () {
+      if (!$("#uiWindow").hasClass('processing')) {
+        $('#ins-no').css('background-position', await getButtonBackgroundPosition(`noHover`));
+      }
+    },
     async function () { $('#ins-no').css('background-position', await getButtonBackgroundPosition(`no`)); }
   )
 

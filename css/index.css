@@ -21,6 +21,10 @@ body {
   background-size: 720px 1000px;
 }
 
+.processing{
+  filter: brightness(0.5);
+}
+
 #bet-window, #hit-stand-window, #splitDouble, #insurance{
   width: 100%;
   display: contents;
