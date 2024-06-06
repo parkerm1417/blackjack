@@ -47,6 +47,7 @@ export async function displayStartingHands() {
     $(`#hand${currentHandIndex + 1}`).append($card);
     //await new Promise(resolve => setTimeout(resolve, 1000))
   };
+  $("#uiWindow").removeClass('processing');
   await updateScores();
 }
 

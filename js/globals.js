@@ -1,4 +1,4 @@
-import { getUiBackgroundPosition, getButtonBackgroundPosition, getCardBackgroundPosition} from './utils.js';
+import { getUiBackgroundPosition, getButtonBackgroundPosition, getCardBackgroundPosition } from './utils.js';
 import { logic } from './game.js';
 import { drawCard } from './api.js';
 import { updateScores } from './ui.js';
@@ -20,7 +20,7 @@ export const STATE_INSURANCE = 6;
 export const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
 export const cardScale = 10; // Scale of the cards
 export let gameState = STATE_BETTING; // Current state of the game
-export let gameWindow = 'bet'; // Current UI window shown
+export let gameWindow = ""; // Current UI window shown
 export let deckId = ""; // ID of the current deck
 export const deck_count = 6; // Number of decks used
 export let dealerHasPlayed = false; // Flag to check if dealer has played
@@ -102,9 +102,11 @@ export function setGameState(value) {
 }
 
 export async function setGameWindow(value) {
+  if (gameWindow === value) return; // If the same window is requested, do nothing
+
   switch (value) {
     case 'bet':
-      if (gameWindow != value || gameWindow != 'splitDouble') {
+      if (gameWindow != 'splitDouble') {
         $('#uiWindow').css('background-position', await getUiBackgroundPosition('fourButton'));
         $('#uiWindow').css('height', '380px');
         $('#uiWindow').css('align-content', 'center');
@@ -115,11 +117,9 @@ export async function setGameWindow(value) {
       break;
 
     case 'hit':
-      if (gameWindow != value) {
-        $('#uiWindow').css('background-position', await getUiBackgroundPosition('twoButton'));
-        $('#uiWindow').css('height', '230px');
-        $('#uiWindow').css('align-content', 'center');
-      }
+      $('#uiWindow').css('background-position', await getUiBackgroundPosition('twoButton'));
+      $('#uiWindow').css('height', '230px');
+      $('#uiWindow').css('align-content', 'center');
       $('#hit-stand-window').removeClass('hidden'); //show hit buttons
       $('#bet-window').addClass('hidden');          //hide bet buttons
       $('#splitDouble').addClass('hidden');         //hide split & double buttons
@@ -127,7 +127,7 @@ export async function setGameWindow(value) {
       break;
 
     case 'splitDouble':
-      if (gameWindow != value || gameWindow != 'bet') {
+      if (gameWindow != 'bet') {
         $('#uiWindow').css('background-position', await getUiBackgroundPosition('fourButton'));
         $('#uiWindow').css('height', '380px');
         $('#uiWindow').css('align-content', 'center');
@@ -139,11 +139,9 @@ export async function setGameWindow(value) {
       break;
 
     case 'insurance':
-      if (gameWindow != value) {
-        $('#uiWindow').css('background-position', await getUiBackgroundPosition('insurance'));
-        $('#uiWindow').css('height', '370px');
-        $('#uiWindow').css('align-content', 'end');
-      }
+      $('#uiWindow').css('background-position', await getUiBackgroundPosition('insurance'));
+      $('#uiWindow').css('height', '370px');
+      $('#uiWindow').css('align-content', 'end');
       $('#insurance').removeClass('hidden');        //show insurance buttons
       $('#bet-window').addClass('hidden');          //hide bet buttons
       $('#hit-stand-window').addClass('hidden');    //hide hit buttons
@@ -196,18 +194,18 @@ export async function splitHand(doubleAce) {
   // Clear and set up the current hand div
   $(`#hand${currentHandIndex + 1}`).empty();
   $(`#hand${currentHandIndex + 1}`).append(`<div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div></div>`);
-  $(`#hand${currentHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px'});
+  $(`#hand${currentHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px' });
 
   // Add a new hand div
   $('#playerHand').append(`<div id="hand${player.hands.length + 1}" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>`);
-  $(`#hand${player.hands.length + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px'});
+  $(`#hand${player.hands.length + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px' });
 
   // Split the current hand
   let splitHandIndex = currentHandIndex; //store the current hand index
   let tempHand = player.hands[currentHandIndex];
   let halfTotal = doubleAce ? 11 : tempHand.total / 2;
 
-  player.hands[currentHandIndex] = { hand: [tempHand.hand[0]], total: halfTotal, aceIs11: tempHand.aceIs11/2 };
+  player.hands[currentHandIndex] = { hand: [tempHand.hand[0]], total: halfTotal, aceIs11: tempHand.aceIs11 / 2 };
   await drawCard(player);
 
   // Update the current hand display
@@ -218,7 +216,7 @@ export async function splitHand(doubleAce) {
   }
 
   // Add new hand to player.hands and set currentHandIndex to that hand (will be added to end, so use length)
-  player.hands.push({ hand: [tempHand.hand[1]], total: halfTotal, aceIs11: tempHand.aceIs11/2 });
+  player.hands.push({ hand: [tempHand.hand[1]], total: halfTotal, aceIs11: tempHand.aceIs11 / 2 });
   currentHandIndex = player.hands.length - 1;
   await drawCard(player);
 
@@ -228,7 +226,7 @@ export async function splitHand(doubleAce) {
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
     $(`#hand${currentHandIndex + 1}`).append($card);
   }
-  
+
   await updateScores();
   currentHandIndex = splitHandIndex; // Reset the hand index
   tempHand = []; //clear temp variable
